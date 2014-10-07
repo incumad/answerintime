@@ -1,0 +1,7 @@
+cuenta atras: http://www.jqueryscript.net/time-clock/Animated-Responsive-jQuery-Countdown-Timer-Plugin-mbCoimingsoon.html
+
+J:1, M:0
+cordova environment
+1.
+cordova platform add ios
+cordova platform add android
