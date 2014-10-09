@@ -26,8 +26,6 @@ var app = {
         // Primera carga de la aplicacion
         this.isAlreadySetup = localStorage.getItem("is_already_setup");
         
-        this.isAlreadySetup = 0;
-        
         app.setTupClock('deviceready');
         parseWrapper.initialize(this.isAlreadySetup);
         

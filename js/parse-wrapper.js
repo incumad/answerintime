@@ -32,32 +32,21 @@ var parseWrapper = {
     },
     
     subscribePushNotification: function() {
-        
         // Inicializamos Parse Plugin para not Push
         parsePlugin.initialize(this.PARSEAPPID, this.PARSECLIENTKEY, function() {
-            alert('success inicializado parse');
             parsePlugin.getInstallationId(function(id) {
-                alert(id);
-                // COger el esp del movil
+                // TODO Coger el canal (esp) del idioma del movil
                 parsePlugin.subscribe('esp', function() {
-                    alert('OK se subscribio');
-                    parsePlugin.getSubscriptions(function(subscriptions) {
-                        alert(subscriptions);
-                    }, function(e) {
-                        alert('error');
-                    });
+                    // OK subscripcion
                 }, function(e) {
-                    alert('error al subscribirse' + e);
+                    //ERROR subscripcion
                 });
             }, function(e) {
-                //ERROR
-                alert('error al inicializar con la instalacion');
+                //ERROR get id installaction
             });
         }, function(e) {
-            //ERROR
-            alert('error al inicializar parse');
+            //ERROR 
         });
- 
     },
     
     

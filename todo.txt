@@ -2,6 +2,9 @@ cuenta atras: http://www.jqueryscript.net/time-clock/Animated-Responsive-jQuery-
 plugin push: https://www.parse.com/tutorials/android-push-notifications
              https://www.parse.com/tutorials/ios-push-notifications
 
+Instalacion push en android: http://stackoverflow.com/questions/25038694/how-do-i-get-parse-com-push-notifications-working-in-a-cordova-phonegap-android
+
+
 J:2, M:0
 cordova environment
 1.
