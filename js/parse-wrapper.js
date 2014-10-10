@@ -9,7 +9,7 @@ var parseWrapper = {
     
     initialize: function(isAlreadySetup) {
         Parse.initialize(this.PARSEAPPID, this.PARSEJSID);
-
+        
         this.oPregunta = Parse.Object.extend("Pregunta");
         this.oUsuario = Parse.Object.extend("Usuario");
         
@@ -20,8 +20,7 @@ var parseWrapper = {
             
     savePregunta: function(preguntaData) {
         var pregunta = new this.oPregunta();
-        // horas
-        // 
+
         pregunta.save(
             preguntaData, 
             { 
@@ -49,7 +48,6 @@ var parseWrapper = {
         });
     },
     
-    
     testSaveParse: function() {
         var testData = {
             acierto1: 1,
@@ -61,6 +59,11 @@ var parseWrapper = {
         };
         
         this.savePregunta(testData);
+    },
+            
+    testCloudFunction: function() {
+        Parse.Cloud.run('getFirstTimeToDye',{},{success: function(result) {alert(result);},error: function(error) {alert(error);}});
+        Parse.Cloud.run('getTimeToDye',{'usuarioId':'LB97TVWmsb'},{success: function(result) {alert(result);},error: function(error) {alert(error);}});
     }
 };
 
