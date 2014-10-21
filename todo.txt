@@ -18,7 +18,18 @@ copiar de la carpeta ios-resources y android resources imagenes de iconnes y spl
 ios     ../paltforms/ios/icons    ../paltforms/ios/splash    
 android  ../paltforms/android/res
 
+para el splash
+modificar el aplication de cordova
 
+super.init();
+//Linea para el splash screen
+super.setIntegerProperty("splashscreen", R.drawable.splash);    
 
 
 login user: test@test.com   password : test
+
+Hay que intentar hacer todo de manera asincrona, con funciones de callback, pq sino no funcionara siempre bien, me ha pasado que al ir ejecutando normal y 
+un evento que venia de un callback y pintaba, a veces funcionaba y otras no, por que se ejecutaba antes o despues que la carga de la pagina con f7
+
+Hay que tener cuidado al usar jquery por que al repintarse no se entera de que vuelve a estar, es como si se
+creasen 2 ids iguales, usando el selector de f7 $$ si lo ve, lo malo es que para el reloj no podia
