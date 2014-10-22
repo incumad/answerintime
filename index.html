@@ -269,6 +269,8 @@
         <!--TEMPLATES -->
         <script id="template-question" type="text/template7">
 <div class="page" data-page="question">
+    <input type="hidden" id='pregObjectId' value='{{pregObjectId}}'>
+    <input type="hidden" id='horas' value='{{horas}}'>
     <div class="content-block">
       <div class="logo">Cuestionados</div>
     </div>                
@@ -279,7 +281,7 @@
             <li>
               <label class="label-radio item-content">
                 <!-- Checked by default -->
-                <input type="radio" name="my-radio" value="{{acierto1}}">
+                <input type="radio" name="question-radio-{{pregObjectId}}" num="1" value="{{acierto1}}">
                 <div class="item-inner">
                   <div class="item-title">{{respuesta1}}</div>
                 </div>
@@ -288,7 +290,7 @@
             <li>
               <label class="label-radio item-content">
                 <!-- Checked by default -->
-                <input type="radio" name="my-radio" value="{{acierto2}}">
+                <input type="radio" name="question-radio-{{pregObjectId}}" num="2" value="{{acierto2}}">
                 <div class="item-inner">
                   <div class="item-title">{{respuesta2}}</div>
                 </div>
@@ -297,7 +299,7 @@
             <li>
               <label class="label-radio item-content">
                 <!-- Checked by default -->
-                <input type="radio" name="my-radio" value="{{acierto2}}">
+                <input type="radio" name="question-radio-{{pregObjectId}}" num="3" value="{{acierto3}}">
                 <div class="item-inner">
                   <div class="item-title">{{respuesta3}}</div>
                 </div>
@@ -306,7 +308,7 @@
             <li>
               <label class="label-radio item-content">
                 <!-- Checked by default -->
-                <input type="radio" name="my-radio" value="{{acierto2}}">
+                <input type="radio" name="question-radio-{{pregObjectId}}" num="4" value="{{acierto4}}">
                 <div class="item-inner">
                   <div class="item-title">{{respuesta4}}</div>
                 </div>
@@ -315,7 +317,7 @@
           </ul>
         </div> 
     </div>
-    <div id="cd-question"></div>
+    <div class="cd-question-{{pregObjectId}}"></div>
 </div>      
         </script>
     </body>

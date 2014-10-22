@@ -5,7 +5,10 @@ var app = {
     isAlreadySetup : '',
     enableQuestions : [],
     isLogged : false,
-    mainView : '', 
+    mainView : '',
+    f7App : '',
+    idUsuario : 'LB97TVWmsb', // TODO esto se tiene que inicializar leyendo del movil
+    currentQuestion : '', // Pregunta activa actual
     
     initialize: function() {
         this.setupViews();
@@ -14,23 +17,23 @@ var app = {
     
     
     setupViews : function() {
-        var myApp = new Framework7();
+        app.f7App = new Framework7();
         // Export selectors engine
         $$ = Dom7;
         
         // Init main view
-        app.mainView = myApp.addView('.view-main');
+        app.mainView = app.f7App.addView('.view-main');
         
         // asocio a la carga de la pagina inicial, el ver si tiene preguntas
-        myApp.onPageInit('index-1', app.iniChecks);
+        app.f7App.onPageInit('index-1', app.iniChecks);
         
         // Add views
-        myApp.addView('#view-2', {
+        app.f7App.addView('#view-2', {
             // Because we use fixed-through navbar we can enable dynamic navbar
             dynamicNavbar: true
         });
-        myApp.addView('#view-3');
-        myApp.addView('#view-4');
+        app.f7App.addView('#view-3');
+        app.f7App.addView('#view-4');
         
         // Vista inicial
         if(!this.isLogin()){
@@ -74,7 +77,7 @@ var app = {
             
     iniChecks: function() {
         // Comprobamos si hay preguntas para el usuario
-        Parse.Cloud.run('getCurrentQuestionsUser',{'usuarioId':'LB97TVWmsb','channel':'esp'},{
+        Parse.Cloud.run('getCurrentQuestionsUser',{'usuarioId':app.idUsuario,'channel':'esp'},{
             success: function(results) { 
                 if (results.length > 0) {
                     app.enableQuestions = results;
@@ -82,7 +85,7 @@ var app = {
                 } else {
                     // Si no tiene preguntas iniciamos directamente el reloj
                     // Inicializamos el reloj con el tiempo del usuario en juego
-                    Parse.Cloud.run('getTimeToDie',{'usuarioId':'LB97TVWmsb'},{
+                    Parse.Cloud.run('getTimeToDie',{'usuarioId':app.idUsuario},{
                         success: function(result) {app.setTupClock(result);}
                     });
                 }
@@ -97,11 +100,11 @@ var app = {
     login : function(){
         var user = $('#user').val();
         var password = $('#password').val();
-        if(user==='test@test.com' && password==='test'){
+        //if(user==='test@test.com' && password==='test'){
             //isLogged=true;
             app.mainView.reloadPage('index.html');
             $$('div.views').removeClass('hidden-toolbar');
-        }
+        //}
 
     },  
             
@@ -118,6 +121,8 @@ var app = {
             // Now we may render our compiled template by passing required context
             var context = {
                 texto: question.get('texto'),
+                pregObjectId: question.id,
+                horas: question.get('horas'),
                 acierto1: question.get('acierto1'),
                 acierto2: question.get('acierto2'),
                 acierto3: question.get('acierto3'),
@@ -128,25 +133,68 @@ var app = {
                 respuesta4: question.get('respuesta4')
             };
             var html = compiledTemplate(context);
+            
+            app.currentQuestion = context;
 
             app.mainView.loadContent(html);
             
             // pongo en marcha el temporizador
             var countdown = new Date();
             countdown.setTime(countdown.getTime() + 12000); // 10 segundos de cuenta atras
-            $('#cd-question').mbComingsoon({ expiryDate: countdown, speed:100, callback: function(){alert('se acabo el tiempo, hacemos cosas como mostrar el reloj y demas');}});
+            $('.cd-question-'+question.id).mbComingsoon({ expiryDate: countdown, speed:100, callBack: app.finishQuestionTime });
 
         }
+    },
+      
+    // Comprueba si hay preguntas que mostrar, si no las hay muestra
+    // la pantalla principal       
+    nextQuestion: function() {
+        if (app.enableQuestions.length > 0) {
+            app.showQuestion(); // Seguimos mostrando preguntas
+        } else { // ya no hay preguntas
+            app.mainView.reloadPage('index.html');
+            /*Parse.Cloud.run('getTimeToDie',{'usuarioId':app.idUsuario},{
+                success: function(result) {app.setTupClock(result);}
+            });*/            
+        }
     },        
-            
-    devCloud: function() {
-
+    
+    // Cuando se acaba el tiempo de cuenta atras de una pregunta
+    finishQuestionTime: function() {
+        var msg = '...';
+        var sTitle = ':(';
+        var acierto = 0;
+        var numRespuesta = 0;
+        var questionInput = "input[name$='question-radio-"+ app.currentQuestion.pregObjectId+"']:checked";
+        
+        if($$( questionInput ).length === 0) { // No contesto nada
+            msg = 'La proxima contesta mas rápido';
+        } else if ($$( questionInput ).val() === '0') { // Respuesta incorrecta
+            msg = 'Oooo... respuesta incorrecta, la proxima vez será';
+            numRespuesta = $$( questionInput ).attr('num');
+        } else { // Respuesta correcta
+            msg = 'Correcto!!! Si señor tu si que sabes!';
+            sTitle = ':)';
+            acierto = 1;
+            numRespuesta = $$( questionInput ).attr('num');
+        }
+        
+        Parse.Cloud.run('saveAnswer',{'numRespuesta':parseInt(numRespuesta), 'pregObjectId':app.currentQuestion.pregObjectId, 'userObjectId':app.idUsuario,'horas':app.currentQuestion.horas,'acierto':acierto},
+            {
+                success: function(result) {
+                    app.f7App.alert(msg,sTitle, app.nextQuestion);
+                },
+                error: function(error) {
+                    app.f7App.alert(msg,sTitle, app.nextQuestion);
+                }
+            }
+        );
+    },        
+    
+    // aqui pruebo el codigo para el cloud        
+    devCloud: function(request, response) {
     
 
-    },        
-            
-    runTests: function() {
-        parseWrapper.testSaveParse();
     }
     
 };

@@ -65,6 +65,7 @@ var parseWrapper = {
         Parse.Cloud.run('getFirstTimeToDie',{},{success: function(result) {alert(result);},error: function(error) {alert(error);}});
         Parse.Cloud.run('getTimeToDie',{'usuarioId':'LB97TVWmsb'},{success: function(result) {alert(result);},error: function(error) {alert(error);}});
         Parse.Cloud.run('getCurrentQuestionsUser',{'usuarioId':'LB97TVWmsb'},{success: function(result) {alert(result);},error: function(error) {alert(error);}});
+        Parse.Cloud.run('saveAnswer',{'numRespuesta':1, 'pregObjectId':'tqBEx5iSol', 'userObjectId':'LB97TVWmsb','horas':10,'acierto':1},{success: function(result) {alert(result);},error: function(error) {alert(error);}});
     },
             
     testCloudWorkFunction: function(request, status) {
