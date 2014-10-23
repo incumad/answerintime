@@ -21,74 +21,190 @@
     <!-- Left panel with reveal effect-->
     <div class="panel panel-left panel-reveal">
       <div class="content-block">
-        <p>Left panel content goes here</p>
+        <p>Acerca de cuestionados</p>
       </div>
     </div>
     <!-- Right panel with cover effect-->
     <div class="panel panel-right panel-cover">
       <div class="content-block">
-        <p>Right panel content goes here</p>
+        <p>Instrucciones</p>
       </div>
     </div>
     <!-- Views, and they are tabs-->
     <!-- We need to set "toolbar-through" class on it to keep space for our tab bar-->
+    
     <div class="views tabs toolbar-through hidden-toolbar">
-      <!-- Your first view, it is also a .tab and should have "active" class to make it visible by default-->
+        
+      <!--Página principal Info Básica-->
       <div id="view-1" class="view view-main tab active">
+        <div class="navbar">
+          <div class="navbar-inner">
+            <div class="center sliding">Cuestionados</div>
+          </div>
+        </div>          
         <!-- Pages-->
-        <div class="pages">
+        <div class="pages navbar-through">
           <!-- Page, data-page contains page name-->
           <div data-page="index-1" class="page">
             <!-- Scrollable page content-->
             <div class="page-content">
-              <div class="content-block-title">Welcome</div>
+              <div class="content-block-title">Este es el tiempo que te queda de vida</div>
               <div class="content-block">
                   <!--cargandolo en EN el body funciona-->
                 <div class="cd-life"></div>
-                
-                <p>HOLAA This is an example of tab bar application layout. The main point of such tabbed layout is that each tab contains independent view with its own routing and navigation.</p>
-                <p>Each tab/view may have different layout, different navbar type (dynamic, fixed or static) or without navbar like this tab.</p>
-                <p>And of course, your favorite panels are still here: <a href="#" class="open-panel">left</a> and  <a href="#" data-panel="right" class="open-panel">right</a></p>
-                <p>Icons and their labels in tab bar below are just for example and don't related to their content.</p>
+                <p>Ale Real Madrid Ale Ale....</p>
+                <p><a href="#" class="open-panel">Acerca de cuestionados</a></p>
+                <p><a href="#" data-panel="right" class="open-panel">No tienes claro como se juega</a></p>
               </div>
+                <div class="list-block">
+                    <ul>
+                      <li><a href="about.html" class="item-link">
+                          <div class="item-content">
+                            <div class="item-inner">
+                              <div class="item-title">Ver quien es el mejor de tus amigos</div>
+                            </div>
+                          </div></a></li>
+                      <li><a href="services.html" class="item-link">
+                          <div class="item-content">
+                            <div class="item-inner">
+                              <div class="item-title">Ver quien es el mejor de tu pais</div>
+                            </div>
+                          </div></a></li>
+                    </ul>
+                </div>
             </div>
           </div>
+          
         </div>
+       
       </div>
-      <!-- Second view (for second wrap)-->
+      
+      <!-- Formulario para enviar preguntas -->
       <div id="view-2" class="view tab">
         <!-- We can make with view with navigation, let's add Top Navbar-->
         <div class="navbar">
           <div class="navbar-inner">
-            <div class="center sliding">Second View</div>
+            <div class="center sliding">Preguntar</div>
           </div>
         </div>
         <div class="pages navbar-through">
           <div data-page="index-2" class="page">
             <div class="page-content">
-              <div class="content-block">
-                <p>This is a second view. Lets, for example, have here some internal pages with navbar navigation</p>
-              </div>
-              <div class="list-block">
-                <ul>
-                  <li><a href="about.html" class="item-link">
-                      <div class="item-content">
-                        <div class="item-inner">
-                          <div class="item-title">About Us</div>
+            <div class="content-block">
+                <p>Si mandas tu pregunta y la gente considera que es <strong>valida cuando la moderen</strong> ganaras horas de vida. Ya sabes que en cuestionados nos gustan las preguntas muy actuales, atrevete a preguntar por el ultimo <strong>escandalo del gobierno</strong> o por el <strong>suceso mas reciente de tu ciudad</strong></p>
+            </div>
+                
+                
+            <div class="content-block-title">Escribe tu pregunta</div>
+            
+            <div class="list-block">
+              <ul>
+                <li>
+                  <div class="item-content">
+                    <div class="item-inner">
+                      <div class="item-title label">Pregunta</div>   
+                      <div class="item-input">
+                        <input id="mk-question-texto" type="text" placeholder="Escribe aquí tu pregunta">
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            
+            <div class="content-block-title">Escribe las respuestas a tu pregunta</div>
+            <div class="list-block">
+              <ul>            
+                <li>
+                    <div class="item-content">
+                      <div class="item-inner">
+                        <div class="item-title label">Respuesta 1</div>  
+                        <div class="item-input">
+                          <input id="mk-question-respuesta1" type="text" placeholder="Escribe una respuesta">
                         </div>
-                      </div></a></li>
-                  <li><a href="services.html" class="item-link">
-                      <div class="item-content">
-                        <div class="item-inner">
-                          <div class="item-title">Services</div>
+                      </div>
+                    </div>
+                    <label class="label-checkbox item-content">
+                      <!-- Checked by default -->
+                      <input type="radio" name="mk-question-correcta" value="1" checked="checked">
+                      <div class="item-media">
+                        <i class="icon icon-form-checkbox"></i>
+                      </div>
+                      <div class="item-inner">
+                        <div class="item-title">Es la correcta?</div>
+                      </div>
+                    </label>
+                </li>                
+                <li>
+                    <div class="item-content">
+                      <div class="item-inner">
+                        <div class="item-title label">Respuesta 2</div>   
+                        <div class="item-input">
+                          <input id="mk-question-respuesta2" type="text" placeholder="Escribe una respuesta">
                         </div>
-                      </div></a></li>
-                </ul>
-              </div>
+                      </div>
+                    </div>
+                    <label class="label-checkbox item-content">
+                      <!-- Checked by default -->
+                      <input type="radio" name="mk-question-correcta" value="2">
+                      <div class="item-media">
+                        <i class="icon icon-form-checkbox"></i>
+                      </div>
+                      <div class="item-inner">
+                        <div class="item-title">Es la correcta?</div>
+                      </div>
+                    </label>
+                </li>                
+                <li>
+                    <div class="item-content">
+                      <div class="item-inner">
+                        <div class="item-title label">Respuesta 3</div>     
+                        <div class="item-input">
+                          <input id="mk-question-respuesta3" type="text" placeholder="Escribe una respuesta">
+                        </div>
+                      </div>
+                    </div>
+                    <label class="label-checkbox item-content">
+                     <!-- Checked by default -->
+                     <input type="radio" name="mk-question-correcta" value="3">
+                     <div class="item-media">
+                       <i class="icon icon-form-checkbox"></i>
+                     </div>
+                     <div class="item-inner">
+                       <div class="item-title">Es la correcta?</div>
+                     </div>
+                   </label>
+                </li>                
+                <li>
+                    <div class="item-content">
+                      <div class="item-inner">
+                        <div class="item-title label">Respuesta 4</div>  
+                        <div class="item-input">
+                          <input id="mk-question-respuesta4" type="text" placeholder="Escribe una respuesta">
+                        </div>
+                      </div>
+                    </div>
+                    <label class="label-checkbox item-content">
+                      <!-- Checked by default -->
+                      <input type="radio" name="mk-question-correcta" value="4">
+                      <div class="item-media">
+                        <i class="icon icon-form-checkbox"></i>
+                      </div>
+                      <div class="item-inner">
+                        <div class="item-title">Es la correcta?</div>
+                      </div>
+                    </label>
+                </li>
+              </ul>
+            </div>
+            <div class="content-block">
+                <p><a id="sm-question" class="button button-big button-fill color-green" href="#">Revisa la pregunta y envia</a></p>
+            </div>
             </div>
           </div>
         </div>
       </div>
+      
       <div id="view-3" class="view tab">
         <div class="pages">
           <div data-page="index-3" class="page">
@@ -236,22 +352,20 @@
         <div class="toolbar-inner">
             <a href="#view-1" class="tab-link active">
                 <i class="icon tabbar-demo-icon-1"></i>
-                <span class="tabbar-label">Information</span>
+                <span class="tabbar-label">Vida</span>
             </a>
             <a href="#view-2" class="tab-link">
                 <i class="icon tabbar-demo-icon-2"></i>
-                <span class="tabbar-label">Inbox</span>
+                <span class="tabbar-label">Preguntar</span>
             </a>
             <a href="#view-3" class="tab-link">
-                <i class="icon tabbar-demo-icon-3">
-                    <span class="badge badge-red">4</span>
-                </i>
-                <span class="tabbar-label">Upload</span>
+                <i class="icon tabbar-demo-icon-3"></i>
+                <span class="tabbar-label">Moderar</span>
             </a>
             <a href="#view-4" class="tab-link">
                 <i class="icon tabbar-demo-icon-4"></i>
-                <span class="tabbar-label">Photos</span>
-            </a>
+                <span class="tabbar-label">Apostar</span>
+            </a>            
         </div>
       </div>
     </div>

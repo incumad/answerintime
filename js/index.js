@@ -7,7 +7,13 @@ var app = {
     isLogged : false,
     mainView : '',
     f7App : '',
-    idUsuario : 'LB97TVWmsb', // TODO esto se tiene que inicializar leyendo del movil
+    // TODO estos campos se tienen que inicializar
+    idUsuario : 'LB97TVWmsb', 
+    channel : 'esp', 
+    idFB : '10152328083557543', 
+    nombreUsuario: 'Guillermo Sánchez Oliveros', // TODO se tiene que leer del movil        
+    //
+    
     currentQuestion : '', // Pregunta activa actual
     
     initialize: function() {
@@ -22,7 +28,10 @@ var app = {
         $$ = Dom7;
         
         // Init main view
-        app.mainView = app.f7App.addView('.view-main');
+        app.mainView = app.f7App.addView('.view-main', {
+            // Because we use fixed-through navbar we can enable dynamic navbar
+            dynamicNavbar: true
+        });
         
         // asocio a la carga de la pagina inicial, el ver si tiene preguntas
         app.f7App.onPageInit('index-1', app.iniChecks);
@@ -34,6 +43,9 @@ var app = {
         });
         app.f7App.addView('#view-3');
         app.f7App.addView('#view-4');
+        
+        // Asocio acciones a los botones de las vistas
+        $('#sm-question').click(app.submitNewQuestion);
         
         // Vista inicial
         if(!this.isLogin()){
@@ -77,7 +89,7 @@ var app = {
             
     iniChecks: function() {
         // Comprobamos si hay preguntas para el usuario
-        Parse.Cloud.run('getCurrentQuestionsUser',{'usuarioId':app.idUsuario,'channel':'esp'},{
+        Parse.Cloud.run('getCurrentQuestionsUser',{'usuarioId':app.idUsuario,'channel':app.channel},{
             success: function(results) { 
                 if (results.length > 0) {
                     app.enableQuestions = results;
@@ -189,7 +201,65 @@ var app = {
                 }
             }
         );
-    },        
+    },
+    
+    // Compruena que la pregunta es correcta y la envia
+    submitNewQuestion: function() {
+      // Compruebo que los campos estan rellenados correctamente
+      var texto = $('#mk-question-texto').val();
+      var respuesta1 = $('#mk-question-respuesta1').val();
+      var respuesta2 = $('#mk-question-respuesta2').val();
+      var respuesta3 = $('#mk-question-respuesta3').val();
+      var respuesta4 = $('#mk-question-respuesta4').val();
+      var acierto = [0,0,0,0];
+      acierto[$("input[name$='mk-question-correcta']:checked").val()] = 1;
+      var msg = '';
+      
+      if (texto.length < 5) {
+          msg += 'Pregunta<br/>';
+      }
+      if (respuesta1.length < 1) {
+          msg += 'Respuesta 1<br/>';
+      }
+      if (respuesta2.length < 1) {
+          msg += 'Respuesta 2<br/>';
+      }
+      if (respuesta3.length < 1) {
+          msg += 'Respuesta 3<br/>';
+      }
+      if (respuesta4.length < 1) {
+          msg += 'Respuesta 4<br/>';
+      }
+      
+      if (msg.length > 0) {
+        app.f7App.alert(msg,':( Por favor revisa los siguientes campos');
+      } else {
+          var dataQuestion = {
+            acierto1 : acierto[0],
+            acierto2 : acierto[1],
+            acierto3 : acierto[2],
+            acierto4 : acierto[3],
+            acierto5 : 0,
+            fechaFin : '',
+            horas: 10,
+            creadorIdFB: app.idFB,
+            creadorNombre: app.nombreUsuario,            
+            idioma: app.channel,
+            respuesta1: respuesta1,
+            respuesta2 : respuesta2,
+            respuesta3 : respuesta3,
+            respuesta4 : respuesta4,
+            respuesta5 : '',
+            texto : texto
+        }
+
+      }
+      
+      
+      
+    },
+    
+    
     
     // aqui pruebo el codigo para el cloud        
     devCloud: function(request, response) {
