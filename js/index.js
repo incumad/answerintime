@@ -36,6 +36,7 @@ var app = {
         // asocio a la carga de la pagina inicial, el ver si tiene preguntas
         app.f7App.onPageInit('index-1', app.iniChecks);
         
+        /*
         // Add views
         app.f7App.addView('#view-2', {
             // Because we use fixed-through navbar we can enable dynamic navbar
@@ -43,6 +44,7 @@ var app = {
         });
         app.f7App.addView('#view-3');
         app.f7App.addView('#view-4');
+        */
         
         // Asocio acciones a los botones de las vistas
         $('#sm-question').click(app.submitNewQuestion);
@@ -234,28 +236,35 @@ var app = {
       if (msg.length > 0) {
         app.f7App.alert(msg,':( Por favor revisa los siguientes campos');
       } else {
+          
           var dataQuestion = {
-            acierto1 : acierto[0],
-            acierto2 : acierto[1],
-            acierto3 : acierto[2],
-            acierto4 : acierto[3],
-            acierto5 : 0,
-            fechaFin : '',
-            horas: 10,
-            creadorIdFB: app.idFB,
-            creadorNombre: app.nombreUsuario,            
-            idioma: app.channel,
-            respuesta1: respuesta1,
-            respuesta2 : respuesta2,
-            respuesta3 : respuesta3,
-            respuesta4 : respuesta4,
-            respuesta5 : '',
-            texto : texto
-        }
-
+            'acierto1' : acierto[0],
+            'acierto2' : acierto[1],
+            'acierto3' : acierto[2],
+            'acierto4' : acierto[3],
+            'creadorIdFB' : app.idFB,
+            'creadorNombre' : app.nombreUsuario,            
+            'idioma' : app.channel,
+            'respuesta1' : respuesta1,
+            'respuesta2' : respuesta2,
+            'respuesta3' : respuesta3,
+            'respuesta4' : respuesta4,
+            'texto' : texto
+            };
+        
+            Parse.Cloud.run('saveNewQuestion',dataQuestion,
+                {
+                    success: function(result) {
+                        msg = 'Gracias por mandarnos tu pregunta, en cuanto sea moderada recibiras tu tiempo extra ;)';
+                        app.f7App.alert(msg,':)');
+                    },
+                    error: function(error) {
+                        msg = 'Hubo un error al guardar tu pregunta, intentalo denuevo mas tarde';
+                        app.f7App.alert(msg,':(');
+                    }
+                }
+            );
       }
-      
-      
       
     },
     
