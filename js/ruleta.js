@@ -1,4 +1,3 @@
-//<script type="text/javascript" src="lib/jquery/jquery.tinysort.js"></script>
 	// Helpers
 	shuffle = function(o) {
 		for ( var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x)
@@ -49,16 +48,17 @@
 		"3"    : "Pierdes todo",
 		"4"  : "Restas la mitad",
 		"5" : "Sumas la mitad",
-		"6"  : "Restas un cuarto",
-		"7" : "Sumsa un cuarto",
+		"6"  : "Restas la mitad",
+		"7" : "Sumas la mitad",
 		"8"  : "Pierdes todo",
 		"9"   : "Multiplicas por 2",
 		"10"    : "Pierdes todo",
 		"11"  : "Restas la mitad",
 		"12" : "Sumas la mitad",
-		"13"  : "Restas un cuarto",
-		"14" : "Sumas un cuarto"
-	};
+		"13"  : "Restas la mitad",
+		"14" : "Sumas la mitad"
+                };
+
 
 	$(function() {
                 /*
@@ -128,7 +128,7 @@
 		maxSpeed : Math.PI / 16,
 
 		upTime : 1000, // How long to spin up for (in ms)
-		downTime : 17000, // How long to slow down for (in ms)
+		downTime : 10000, // How long to slow down for (in ms)
 
 		spinStart : 0,
 
@@ -136,17 +136,45 @@
 
 		centerX : 300,
 		centerY : 300,
+                
+                currentSegment: '',
 
 		spin : function() {
 
 			// Start the wheel only if it's not already spinning
 			if (wheel.timerHandle == 0) {
-				wheel.spinStart = new Date().getTime();
-				wheel.maxSpeed = Math.PI / (16 + Math.random()); // Randomly vary how hard the spin is
-				wheel.frames = 0;
-				wheel.sound.play();
+                                
+                                if ($$('#apuesta-horas').val() < 1) {
+                                    $$('#apuesta-horas').val(1);
+                                } else if ($$('#apuesta-horas').val() > 24) {
+                                    $$('#apuesta-horas').val(24);
+                                }
+                            
+                                app.f7App.confirm('Vas a jugarte ' + $$('#apuesta-horas').val() + ' horas de tu tiempo', '¿Estas seguro?', function () {
+                                    // TODO restamos las horas de parse
+                                    var dataBet = {
+                                        'userObjectId':app.idUsuario,
+                                        'horas': (parseInt($$('#apuesta-horas').val()) * -1) // tengo que restar al usuario estas horas
+                                    };
+                                    Parse.Cloud.run('loadBet',dataBet,
+                                        {
+                                            success: function(result) {
+                                                wheel.spinStart = new Date().getTime();
+                                                wheel.maxSpeed = Math.PI / (16 + Math.random()); // Randomly vary how hard the spin is
+                                                wheel.frames = 0;                                    
+                                                wheel.timerHandle = setInterval(wheel.onTimerTick, wheel.timerDelay);
+                                            },
+                                            error: function(error) {
+                                                msg = 'Hubo un error al reslizar tu apuesta, intentalo denuevo mas tarde';
+                                                app.f7App.alert(msg,':(');
+                                            }
+                                        }
+                                    );
+                                });                            
 
-				wheel.timerHandle = setInterval(wheel.onTimerTick, wheel.timerDelay);
+				//wheel.sound.play();
+                                
+
 			}
 		},
 
@@ -181,6 +209,63 @@
 				clearInterval(wheel.timerHandle);
 				wheel.timerHandle = 0;
 				wheel.angleDelta = 0;
+                                // TODO indicamos lo que gana y se lo decimos a parse
+                                
+                                // Vemos que valor a tocado
+                                var action = 0;
+                                $.each(venues, function(key, item) {
+                                    if (wheel.currentSegment == item) {
+                                        action = key;
+                                    }
+                                });
+                                
+                                var pt = ['1','3','8','10'];// pierdes todo
+                                var m2 = ['2','9']; // multiplicas por 2
+                                var rm = ['4','11','6','13']; // restas la mitad
+                                var sm = ['5','7','12','14']; // sumas mitad
+                                
+                                var sTextR = '';
+                                var stitleR = '';
+                                var hApostadas = parseInt($$('#apuesta-horas').val());
+                                var hResultantes = 0;
+                                
+                                if (pt.indexOf(action) > 0) {
+                                    stitleR = ':(';
+                                    sTextR = 'Has perdido ' + hApostadas + ' horas';
+                                    
+                                    
+                                } else if (m2.indexOf(action) > 0) {
+                                    stitleR = ':)';
+                                    sTextR = 'Has ganado ' + hApostadas + ' horas';
+                                    hResultantes = hApostadas * 2;
+                                    
+                                } else if (rm.indexOf(action) > 0) {
+                                    stitleR = ':(';
+                                    sTextR = 'Has perdido ' + (hApostadas/2) + ' horas';
+                                    hResultantes = hApostadas / 2;
+                                    
+                                } else if (sm.indexOf(action) > 0) {
+                                    stitleR = ':)';
+                                    sTextR = 'Has ganado ' + (hApostadas/2) + ' horas';
+                                    hResultantes = hApostadas + (hApostadas / 2);
+                                }
+                                
+                                if (hResultantes > 0) {
+                                    var dataBet = {
+                                        'userObjectId':app.idUsuario,
+                                        'horas': hResultantes // tengo que restar al usuario estas horas
+                                    };
+                                    Parse.Cloud.run('loadBet',dataBet,
+                                        {
+                                            error: function(error) {
+                                                msg = 'Hubo un error tecnico al cobrar tu apuesta';
+                                                app.f7App.alert(msg,':(');
+                                            }
+                                        }
+                                    );  
+                                }
+                                
+                                app.f7App.alert(sTextR, stitleR);
 			}
 
 			/*
@@ -193,7 +278,7 @@
 		init : function(optionList) {
 			try {
 				wheel.initWheel();
-				wheel.initAudio();
+				//wheel.initAudio();
 				wheel.initCanvas();
 				wheel.draw();
 
@@ -215,6 +300,8 @@
 			var canvas = $('#wheel #canvas').get(0);
 
 			canvas.addEventListener("click", wheel.spin, false);
+                        
+                        
 			wheel.canvasContext = canvas.getContext("2d");
 		},
 
@@ -283,6 +370,7 @@
 			ctx.textBaseline = "middle";
 			ctx.fillStyle = '#000000';
 			ctx.font = "2em Arial";
+                        wheel.currentSegment = wheel.segments[i];
 			ctx.fillText(wheel.segments[i], centerX + size + 25, centerY);
 		},
 
@@ -375,7 +463,7 @@
 		}
 	};
 
-	window.onload = function() {
+	function initRuleta() {
 		wheel.init();
 
 		var segments = new Array();

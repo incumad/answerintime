@@ -19,6 +19,7 @@ var app = {
     initialize: function() {
         this.setupViews();
         this.bindEvents();
+        initRuleta();
     },
     
     
@@ -73,7 +74,7 @@ var app = {
         document.addEventListener('deviceready', this.onDeviceReady, false);
         
         // @TODO COMENTARLO DENTRO DE LA APLICACION MOVIL !!!!!
-        //app.isAlreadySetup = 'yes'; $( document ).ready(this.onDeviceReady); 
+        app.isAlreadySetup = 'yes'; $( document ).ready(this.onDeviceReady); 
         
     },
             
