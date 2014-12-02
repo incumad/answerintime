@@ -7,11 +7,12 @@ var app = {
     isLogged : false,
     mainView : '',
     f7App : '',
+    isDieMsgShow: false,
     // TODO estos campos se tienen que inicializar
     idUsuario : 'LB97TVWmsb', 
     channel : 'esp', 
     idFB : '10152328083557543', 
-    nombreUsuario: 'Guillermo Sánchez Oliveros', // TODO se tiene que leer del movil        
+    nombreUsuario: 'Guillermo Sánchez Oliveros', // TODO se tiene que leer del movil       
     //
     
     currentQuestion : '', // Pregunta activa actual
@@ -61,7 +62,10 @@ var app = {
     setTupClock: function(msToDye) {
         var austDay = new Date();
         austDay.setTime(austDay.getTime() + msToDye);
-        $('.cd-life').mbComingsoon({ expiryDate: austDay, speed:100 });
+        $('.cd-life-aux').empty();
+        $('.cd-life-aux').html('<div class="cd-life"></div>');
+        var pp = $('.cd-life').mbComingsoon({ expiryDate: austDay, speed:100, callBack: app.finishTimeDie });
+        pp.stop();
         // Salvamos la ultima fecha de muerte para mostrar el reloj
         // en caso de que haya fallo al llamar al servidor
         localStorage.setItem("lastDateSalved",austDay.getTime());
@@ -74,7 +78,7 @@ var app = {
         document.addEventListener('deviceready', this.onDeviceReady, false);
         
         // @TODO COMENTARLO DENTRO DE LA APLICACION MOVIL !!!!!
-        app.isAlreadySetup = 'yes'; $( document ).ready(this.onDeviceReady); 
+        //app.isAlreadySetup = 'yes'; $( document ).ready(this.onDeviceReady); 
         
     },
             
@@ -269,6 +273,24 @@ var app = {
       
     },
     
+    // Se le acabo el tiempo
+    finishTimeDie: function() {
+        if (!app.isDieMsgShow) {
+            app.isDieMsgShow = true;
+            Parse.Cloud.run('dieProcess',{'userObjectId':app.idUsuario},
+                    {
+                        success: function(result) {
+                            msg = 'Oooo se acabo tu tiempo, es una pena pero vas a perder todos tus logros en cuestionados, aunque sabemos que quieres seguir jugando así que no te preocupes puedes volver a NACER :)';
+                            app.f7App.alert(msg,':(', function(){app.mainView.reloadPage('index.html');});
+                        },
+                        error: function(error) {
+                            msg = 'Oooo se acabo tu tiempo, es una pena pero vas a perder todos tus logros en cuestionados, aunque sabemos que quieres seguir jugando así que no te preocupes puedes volver a NACER :)';
+                            app.f7App.alert(msg,':(');
+                        }
+                    }
+                );
+        }
+    },
     
     
     // aqui pruebo el codigo para el cloud        
