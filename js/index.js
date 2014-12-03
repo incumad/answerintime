@@ -8,6 +8,7 @@ var app = {
     mainView : '',
     f7App : '',
     isDieMsgShow: false,
+    daysOfLive: 2,
     // TODO estos campos se tienen que inicializar
     idUsuario : 'LB97TVWmsb', 
     channel : 'esp', 
@@ -64,7 +65,8 @@ var app = {
         austDay.setTime(austDay.getTime() + msToDye);
         $('.cd-life-aux').empty();
         $('.cd-life-aux').html('<div class="cd-life"></div>');
-        var pp = $('.cd-life').mbComingsoon({ expiryDate: austDay, speed:100, callBack: app.finishTimeDie });
+        var pp = $('.cd-life').mbComingsoon({ expiryDate: austDay, speed:100, callBack: app.finishTimeDie, localization: {
+                days: "días", hours: "horas", minutes: "minutos", seconds: "segundos"}});
         pp.stop();
         // Salvamos la ultima fecha de muerte para mostrar el reloj
         // en caso de que haya fallo al llamar al servidor
@@ -78,7 +80,7 @@ var app = {
         document.addEventListener('deviceready', this.onDeviceReady, false);
         
         // @TODO COMENTARLO DENTRO DE LA APLICACION MOVIL !!!!!
-        //app.isAlreadySetup = 'yes'; $( document ).ready(this.onDeviceReady); 
+        app.isAlreadySetup = 'yes'; $( document ).ready(this.onDeviceReady); 
         
     },
             
@@ -104,8 +106,12 @@ var app = {
                 } else {
                     // Si no tiene preguntas iniciamos directamente el reloj
                     // Inicializamos el reloj con el tiempo del usuario en juego
-                    Parse.Cloud.run('getTimeToDie',{'usuarioId':app.idUsuario},{
-                        success: function(result) {app.setTupClock(result);}
+                    Parse.Cloud.run('getInitSettings',{'usuarioId':app.idUsuario},{
+                        success: function(result) {
+                            app.daysOfLive = result.daysOfLive;
+                            $('.daysOfLive').html(app.daysOfLive);
+                            app.setTupClock(result.msToDie);
+                        }
                     });
                 }
             }, 
@@ -160,7 +166,8 @@ var app = {
             // pongo en marcha el temporizador
             var countdown = new Date();
             countdown.setTime(countdown.getTime() + 12000); // 10 segundos de cuenta atras
-            $('.cd-question-'+question.id).mbComingsoon({ expiryDate: countdown, speed:100, callBack: app.finishQuestionTime });
+            $('.cd-question-'+question.id).mbComingsoon({ expiryDate: countdown, speed:100, callBack: app.finishQuestionTime, localization: {
+                days: "días", hours: "horas", minutes: "minutos", seconds: "segundos"}});
 
         }
     },

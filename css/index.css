@@ -4,3 +4,71 @@ body {
     height: 100%;
     margin: auto;
 }
+
+span.navbar-logo {
+  width: 100px;
+  height: 25px;
+  background: url(../img/logo.png) no-repeat center;
+  -webkit-background-size: 100% auto;
+  background-size: 100% auto;
+  display: block;
+}
+
+.page-content {
+  background: none;
+  background: #000000 url(../img/bg.jpg) repeat;
+}
+
+
+.cd-life {
+  background-color: #f7f7f8;
+  border: 1px solid #d7d7d8;
+  border-radius: 10%;
+  margin: auto;
+  padding: 10px;
+  text-align: center;
+  width: 90%;
+}
+
+.lifet {
+  color: #00851F !important;
+  font-weight: bold;
+  text-align: center !important;
+}
+
+.lifet img{
+    vertical-align: middle;
+}
+
+.life-status {
+    color: #00851F !important;
+    width: 90%;
+    text-align: center;
+    margin:auto;
+    padding: 10px;   
+}
+.life-status img{
+    background-color: #f7f7f8;
+    border: 1px solid #d7d7d8;
+    border-radius: 50%;
+}
+
+i.icon.icon-friends {
+  background-image: url("../img/friends.png");
+  height: 29px;
+  width: 29px;
+}
+
+i.icon.icon-world {
+  background-image: url("../img/world.png");
+  height: 29px;
+  width: 29px;
+}
+
+i.icon.icon-info {
+  background-image: url("../img/info.png");
+  height: 29px;
+  width: 29px;
+}
+
+

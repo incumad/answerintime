@@ -21,13 +21,24 @@
     <!-- Left panel with reveal effect-->
     <div class="panel panel-left panel-reveal">
       <div class="content-block">
-        <p>Acerca de cuestionados</p>
+        <h2>Jugar ha cuestionados es muy muy sencillo</h2>
+        <p>El aspecto fundamental del juego consiste en contestar a <strong>preguntas</strong> que te llegan durante del día de manera automática</p>
+        <p>Si <strong>contestas correctamente</strong> a estas preguntas <strong>ganaras tiempo de vida</strong> y podrás seguir creciendo con las ventajas que esto implica</p>
+        <p>Si fallas o no contestas a las preguntas, tu tiempo de vida se ira agotando poco a poco, hasta que se te acabe y mueras en cuestionados :(</p>
+        <h3>Tranquilo hay otras formas de ganar tiempo en Cuestionados</h3>
+        <p><strong>Mandanos preguntas</strong> para ganaer un monton de tiempo extra</p>
+        <p>tambien puedes ganar tiempo <strong>moderando las preguntas</strong> que manda toda la comunidad, te parecen correctas? o no pasan tu corte</p>
+        <p>Por ultimo puedes <strong>apostar</strong> tu tiempo y llegar a ganar el doble de de lo que te juegues, pero cuidado porque tambien lo puedes perder...</p>
       </div>
     </div>
     <!-- Right panel with cover effect-->
     <div class="panel panel-right panel-cover">
       <div class="content-block">
-        <p>Instrucciones</p>
+        <h3>Quién esta detras de Cuestionados</h3>
+        <p>Somos un equipo joven de desarrolladores apasionados por los juegos en grupo</p>
+        <p>Todo surgio porque un día estabamos jugando a un juego de preguntas y respuestas en nuestra casa y queríamos que participase una amiga que está viviendo en Londres.</p>
+        <p>No se nos ocurrio otra cosa que llamarla por telefono en ese momento, pero ya nos quedo el gusanillo de cómo jugaríamos si estuvieramos cada uno en un sitio diferente</p>
+        <p>Así empezo Cuestionados y hoy compartimos nuestro trabajo contigo, para que lo disfrutes como hemos hecho nosotros</p>
       </div>
     </div>
     <!-- Views, and they are tabs-->
@@ -39,7 +50,7 @@
       <div id="view-1" class="view view-main tab active">
         <div class="navbar">
           <div class="navbar-inner">
-            <div class="center sliding">Cuestionados</div>
+            <div class="center sliding"><span class="navbar-logo"></span></div>
           </div>
         </div>          
         <!-- Pages-->
@@ -48,30 +59,58 @@
           <div data-page="index-1" class="page">
             <!-- Scrollable page content-->
             <div class="page-content">
-              <div class="content-block-title">Este es el tiempo que te queda de vida</div>
+              <div class="content-block-title lifet warning"><img src="img/sand-clock.png"/>Te queda de vida<img src="img/sand-clock.png"/></div>
               <div class="content-block">
                   <!--cargandolo en EN el body funciona-->
                 <div class="cd-life-aux"></div>
-                <p>Ale Real Madrid Ale Ale....</p>
-                <p><a href="#" class="open-panel">Acerca de cuestionados</a></p>
-                <p><a href="#" data-panel="right" class="open-panel">No tienes claro como se juega</a></p>
-              </div>
-                <div class="list-block">
-                    <ul>
-                      <li><a href="about.html" class="item-link">
-                          <div class="item-content">
-                            <div class="item-inner">
-                              <div class="item-title">Ver quien es el mejor de tus amigos</div>
-                            </div>
-                          </div></a></li>
-                      <li><a href="services.html" class="item-link">
-                          <div class="item-content">
-                            <div class="item-inner">
-                              <div class="item-title">Ver quien es el mejor de tu pais</div>
-                            </div>
-                          </div></a></li>
-                    </ul>
+                <div class="life-status">
+                    <h3>Naciste hace <span class="daysOfLive">25</span> días, un bebe muy lindo</h3>
+                    <img src="img/baby.png" />
                 </div>
+              </div>
+                
+                <div class="list-block">
+                  <ul>
+                    <li>
+                      <a href="about.html" class="item-link item-content">
+                        <div class="item-media"><i class="icon icon-world"></i></div>
+                        <div class="item-inner">
+                          <div class="item-title">Quién es el mejor de tus amigos</div>
+                          <div class="item-after">Ver</div>
+                        </div>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="services.html" class="item-link item-content">
+                        <div class="item-media"><i class="icon icon-friends"></i></div>
+                        <div class="item-inner">
+                          <div class="item-title">Quién es el mejor de tu pais</div>
+                          <div class="item-after">Ver</div>
+                        </div>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="#" class="open-panel item-link item-content">
+                        <div class="item-media"><i class="icon icon-info"></i></div>  
+                        <div class="item-inner">
+                          <div class="item-title">Cómo se juega a cuestionados</div>
+                          <div class="item-after">Ver</div>
+                        </div>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="#" data-panel="right" class="open-panel item-link item-content">
+                        <div class="item-media"><i class="icon icon-info"></i></div>  
+                        <div class="item-inner">
+                          <div class="item-title">Saber más sobre cuestionados</div>
+                          <div class="item-after">Ver</div>
+                        </div>
+                      </a>
+                    </li>                    
+                  </ul>
+                </div>  
+              
+              
             </div>
           </div>
           
