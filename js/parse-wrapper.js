@@ -65,7 +65,7 @@ var parseWrapper = {
             // Do something with the returned Parse.Object values
             for (var i = 0; i < results.length; i++) {
               var object = results[i];
-              alert(object.id + ' - ' + object.get('playerName'));
+              alert(object.id);
             }
           },
           error: function(error) {

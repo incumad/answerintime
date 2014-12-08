@@ -136,7 +136,8 @@ var app = {
                     if(response.status === 'connected') {
                         alert('Facebook login succeeded, got access token: ' + response.authResponse.token);
                         app.setinfoUser();
-                        app.mainView.loadPage('login.html');
+                        app.mainView.loadPage('index.html');
+                            $$('div.views').removeClass('hidden-toolbar');
                     } else {
                         alert('Facebook login failed: ' + response.error);
                     }
@@ -157,25 +158,11 @@ var app = {
                                 email: data.email,
                                 hometown: data.hometown,
                                 birthday: data.birthday}
-                 // parseWrapper.saveUsuario(dataUser);
+                  parseWrapper.saveUsuario(dataUser);
                  
                },
                error: function(error){alert(error.message);}
               });
-       openFB.api({
-            path: '/me/friendlists',
-            success: function(response) {
-                var data = response.data
-                $.each( data, function( key, value ) {
-                    alert(key);
-                    return false;
-                });
-                alert(JSON.stringify(data));
-                
-               
-            },
-            error: function(error){alert(error.message);}
-       });
 
     },
             
