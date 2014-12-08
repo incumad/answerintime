@@ -39,7 +39,42 @@ var parseWrapper = {
             
     testCloudWorkFunction: function(request, status) {
         
+    },
+    saveUsuario: function(usuarioData) {
+        var usuario = new this.oUsuario();
+
+        usuario.save(
+            usuarioData, 
+            { 
+              success:function(usuario) {//guardar en locale storage id de usuario 
+                                        localStorage.setItem("usuarioId",usuario.id);
+                                        alert("El usuario se ha registrado correctamente en la app"); },
+              error:function(usuario,error) { alert("Lo sentimos, hubo un problema con la red y no se pudo guardar tus datos. " + error); } 
+            }
+        );
+    },
+    getPreguntasModerar: function() {
+        var Preguntas = Parse.Object.extend("PreguntasN");
+        var query = new Parse.Query(Preguntas);
+        var now = new Date();
+        query.lessThanOrEqualTo("moderaDesde", now);
+        query.greaterThanOrEqualTo("moderarHasta", now);
+        query.find({
+          success: function(results) {
+            alert("Successfully retrieved " + results.length + " scores.");
+            // Do something with the returned Parse.Object values
+            for (var i = 0; i < results.length; i++) {
+              var object = results[i];
+              alert(object.id + ' - ' + object.get('playerName'));
+            }
+          },
+          error: function(error) {
+            alert("Error: " + error.code + " " + error.message);
+          }
+        });
     }
+
+
 };
 
 

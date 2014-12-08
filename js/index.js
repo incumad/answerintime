@@ -22,6 +22,8 @@ var app = {
         this.setupViews();
         this.bindEvents();
         initRuleta();
+        openFB.init({appId: '728946893842507'});   
+
     },
     
     
@@ -119,19 +121,63 @@ var app = {
     },
     
     isLogin : function(){
-        return app.isLogged;
+        var userId = localStorage.getItem('usuarioId');
+      
+        if (userId !== null){
+            return false;
+        }
+        return false;
+
     },
 
     login : function(){
-        var user = $('#user').val();
-        var password = $('#password').val();
-        //if(user==='test@test.com' && password==='test'){
-            //isLogged=true;
-            app.mainView.reloadPage('index.html');
-            $$('div.views').removeClass('hidden-toolbar');
-        //}
+               openFB.login(
+                function(response) {
+                    if(response.status === 'connected') {
+                        alert('Facebook login succeeded, got access token: ' + response.authResponse.token);
+                        app.setinfoUser();
+                        app.mainView.loadPage('login.html');
+                    } else {
+                        alert('Facebook login failed: ' + response.error);
+                    }
+                }, {scope: 'email,read_stream,publish_stream'});
 
-    },  
+    }, 
+         setinfoUser : function(){
+      openFB.api({
+               path: '/me',
+               success: function(data) {
+               var dataUser = {first_name: data.first_name,
+                                gender: data.gender,
+                                idFB: data.id,
+                                last_name : data.last_name,
+                                link : data.link,
+                                name: data.name,
+                                locale: data.locale,
+                                email: data.email,
+                                hometown: data.hometown,
+                                birthday: data.birthday}
+                 // parseWrapper.saveUsuario(dataUser);
+                 
+               },
+               error: function(error){alert(error.message);}
+              });
+       openFB.api({
+            path: '/me/friendlists',
+            success: function(response) {
+                var data = response.data
+                $.each( data, function( key, value ) {
+                    alert(key);
+                    return false;
+                });
+                alert(JSON.stringify(data));
+                
+               
+            },
+            error: function(error){alert(error.message);}
+       });
+
+    },
             
     // Muestra una pregunta al usuario         
     showQuestion: function() {
