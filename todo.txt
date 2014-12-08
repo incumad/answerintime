@@ -33,3 +33,16 @@ un evento que venia de un callback y pintaba, a veces funcionaba y otras no, por
 
 Hay que tener cuidado al usar jquery por que al repintarse no se entera de que vuelve a estar, es como si se
 creasen 2 ids iguales, usando el selector de f7 $$ si lo ve, lo malo es que para el reloj no podia
+
+
+
+
+app facebook
+- Para que pueda funcionar la conexion con facebook en phonegap es necesario hacer lo siguienete.
+
+Ir a la siguente configuracion en la app de facebook
+
+--> settings  ---> advanced  ---> en el campo Valid OAuth redirect URIs añador la siguiente url:
+https://www.facebook.com/connect/login_success.html
+
+guardar cambios si no se añade esto en la app de facebook no funcionara con phonegap
