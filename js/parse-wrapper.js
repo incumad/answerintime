@@ -41,17 +41,40 @@ var parseWrapper = {
         
     },
     saveUsuario: function(usuarioData) {
-        var usuario = new this.oUsuario();
+       
+        var oUsuario = Parse.Object.extend("Usuario");
 
-        usuario.save(
-            usuarioData, 
-            { 
-              success:function(usuario) {//guardar en locale storage id de usuario 
-                                        localStorage.setItem("usuarioId",usuario.id);
-                                        alert("El usuario se ha registrado correctamente en la app"); },
-              error:function(usuario,error) { alert("Lo sentimos, hubo un problema con la red y no se pudo guardar tus datos. " + error); } 
+        var usuario = new oUsuario();
+        var query = new Parse.Query(oUsuario);
+        var userId = 0;
+        query.equalTo("idFB", usuarioData.idFB);
+        query.find({
+          success: function(results) {
+            // Do something with the returned Parse.Object values
+            for (var i = 0; i < results.length; i++) {
+                var object = results[i];
+                userId = object.id;             
             }
-        );
+            if (userId===0){
+                   usuario.save(
+                      usuarioData, 
+                      { 
+                        success:function(usuario) {//guardar en locale storage id de usuario 
+                                                  localStorage.setItem("usuarioId",usuario.id);
+                                                  alert("El usuario se ha registrado correctamente en la app"); },
+                        error:function(usuario,error) { alert("Lo sentimos, hubo un problema con la red y no se pudo guardar tus datos. " + error); } 
+                      }
+                  );  
+            }else{
+                localStorage.setItem("usuarioId",userId);
+            }
+          },
+          error: function(error) {
+            alert("Error: " + error.code + " " + error.message);
+          }
+        });
+       
+        
     },
     getPreguntasModerar: function() {
         var Preguntas = Parse.Object.extend("PreguntasN");

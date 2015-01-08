@@ -128,7 +128,7 @@ var app = {
     
     isLogin : function(){
         var userId = localStorage.getItem('usuarioId');
-      
+        //app.idUsuario = userId; descomentar cuando todo este ok;
         if (userId !== null){
             return false;
         }
@@ -147,7 +147,7 @@ var app = {
                     } else {
                         alert('Facebook login failed: ' + response.error);
                     }
-                }, {scope: 'email,read_stream,publish_stream'});
+                }, {scope: 'email,read_stream,publish_stream,user_friends,read_friendlists'});
 
     }, 
          setinfoUser : function(){
@@ -163,12 +163,26 @@ var app = {
                                 locale: data.locale,
                                 email: data.email,
                                 hometown: data.hometown,
-                                birthday: data.birthday}
+                                birthday: data.birthday};
                   parseWrapper.saveUsuario(dataUser);
                  
                },
                error: function(error){alert(error.message);}
               });
+              
+             openFB.api({path: '/me/friends', 
+                   success: function(response) {
+                        var data = response.data
+                        alert(response.data.length);
+                       $.each( data, function( key, value ) {
+                            alert(JSON.stringify(value));
+                             return false;
+                       });
+                   }, 
+                   error: function(error) {alert(error.message);}
+                 });
+           
+
 
     },
             
