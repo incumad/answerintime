@@ -10,7 +10,7 @@ var app = {
     isDieMsgShow: false,
     daysOfLive: 2,
     // TODO estos campos se tienen que inicializar
-    idUsuario : 'LB97TVWmsb', 
+    idUsuario : '0cTXyqVMK3', 
     channel : 'esp', 
     idFB : '10152328083557543', 
     nombreUsuario: 'Guillermo Sánchez Oliveros', // TODO se tiene que leer del movil       
@@ -19,10 +19,16 @@ var app = {
     currentQuestion : '', // Pregunta activa actual
     
     initialize: function() {
-        this.setupViews();
+        // @TODO COMENTARLO DENTRO DE LA APLICACION MOVIL !!!!!
+        app.isAlreadySetup = 'yes';
+        
+        parseWrapper.initialize(app.isAlreadySetup);
+        openFB.init({appId: '1515642338701364'});   
+        
+        this.setupViews();        
         this.bindEvents();
-        initRuleta();
-        openFB.init({appId: '728946893842507'});   
+        initRuleta();        
+        
 
     },
     
@@ -38,9 +44,6 @@ var app = {
             dynamicNavbar: true
         });
         
-        // asocio a la carga de la pagina inicial, el ver si tiene preguntas
-        app.f7App.onPageInit('index-1', app.iniChecks);
-        
         /*
         // Add views
         app.f7App.addView('#view-2', {
@@ -54,12 +57,15 @@ var app = {
         // Asocio acciones a los botones de las vistas
         $('#sm-question').click(app.submitNewQuestion);
         
+        // asocio a la carga de la pagina inicial, el ver si tiene preguntas
+        app.f7App.onPageInit('index-1', app.iniChecks);           
+        
         // Vista inicial
         if(!this.isLogin()){
             app.mainView.loadPage('login.html');
         }else{
             app.mainView.reloadPage('index.html');
-        }        
+        }
     },
             
     setTupClock: function(msToDye) {
@@ -81,20 +87,20 @@ var app = {
         
         document.addEventListener('deviceready', this.onDeviceReady, false);
         
-        // @TODO COMENTARLO DENTRO DE LA APLICACION MOVIL !!!!!
-        app.isAlreadySetup = 'yes'; $( document ).ready(this.onDeviceReady); 
+        $( document ).ready(this.onDeviceReady); 
         
     },
             
     // deviceready Event Handler
     onDeviceReady: function() {
-        parseWrapper.initialize(app.isAlreadySetup);
-        
         // Ya no debe hacer las operaciones de setup inicial
         if (this.isAlreadySetup !== 'yes') {
             this.isAlreadySetup = 'yes';
             localStorage.setItem("is_already_setup",'yes');
         }
+        
+        //TEST:
+        //app.devCloud({params:{'usuarioId':app.idUsuario}});
     },
             
             
@@ -335,8 +341,39 @@ var app = {
     
     // aqui pruebo el codigo para el cloud        
     devCloud: function(request, response) {
-    
 
+            var query = new Parse.Query("Usuario");
+            query.equalTo("objectId", request.params.usuarioId);
+            query.first({
+            success: function(object) {
+                var finishDate = object.get("finish_time");
+                var bornDate = object.get("bornAt");
+                var fechaFinal = new Date(finishDate);
+                var fechaServidor = new Date();
+                var msToDye = fechaFinal.getTime() - fechaServidor.getTime();
+
+                if (!bornDate) {
+                    bornDate = object.createdAt;
+                }
+
+                var fechaNacimientoJuego = new Date(bornDate);
+
+                var t1 = fechaServidor.getTime();
+                var t2 = fechaNacimientoJuego.getTime();
+
+                var daysOflive = (t1 - t2) / (1000 * 60 * 60 * 24);
+
+                if (daysOflive < 2) {
+                    daysOflive = 2;
+                }
+
+                response.success({msToDie:msToDye,daysOfLive: Math.floor(daysOflive)});
+
+            },
+            error: function() {
+              response.error("finishDate failed");
+            }
+          });
     }
     
 };
