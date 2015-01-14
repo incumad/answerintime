@@ -10,7 +10,7 @@ var app = {
     isDieMsgShow: false,
     daysOfLive: 2,
     // TODO estos campos se tienen que inicializar
-    idUsuario : '0cTXyqVMK3', 
+    idUsuario : 'Fg2krFv3sI', 
     channel : 'esp', 
     idFB : '10152328083557543', 
     nombreUsuario: 'Guillermo Sánchez Oliveros', // TODO se tiene que leer del movil       
@@ -137,6 +137,7 @@ var app = {
     },
 
     login : function(){
+               // Probando en web app.mainView.loadPage('index.html');return;
                openFB.login(
                 function(response) {
                     if(response.status === 'connected') {
