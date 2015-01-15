@@ -5,29 +5,51 @@ var parseWrapper = {
     PARSECLIENTKEY : "TCJ2kIjT9GVEqNCR0GIxTdEbhlTISK9F9AS6vHmM",
     
     initialize: function(isAlreadySetup) {
+
+
         Parse.initialize(this.PARSEAPPID, this.PARSEJSID);
         
         if (isAlreadySetup !== 'yes') {
             parseWrapper.subscribePushNotification();
+        } else {
+            parseWrapper.setReady();
         }
+        
     },
     
     subscribePushNotification: function() {
+
+try {
+
         // Inicializamos Parse Plugin para not Push
-        parsePlugin.initialize(this.PARSEAPPID, this.PARSECLIENTKEY, function() {
+        parsePlugin.initialize(parseWrapper.PARSEAPPID, parseWrapper.PARSECLIENTKEY, function() {
+            
+            parseWrapper.setReady();
+            
             parsePlugin.getInstallationId(function(id) {
                 // TODO Coger el canal (esp) del idioma del movil
                 parsePlugin.subscribe(app.channel, function() {
                     // OK subscripcion
                 }, function(e) {
                     //ERROR subscripcion
+                    alert('error ' + e);
                 });
             }, function(e) {
                 //ERROR get id installaction
+                alert('error ' + e);
             });
         }, function(e) {
-            //ERROR 
+            alert('error ' + e);
         });
+}
+catch (e) {
+    alert(e);
+}
+
+
+        
+        
+        
     },
             
     testCloudFunction: function() {
@@ -55,18 +77,27 @@ var parseWrapper = {
                 var object = results[i];
                 userId = object.id;             
             }
+            
             if (userId===0){
                    usuario.save(
                       usuarioData, 
                       { 
-                        success:function(usuario) {//guardar en locale storage id de usuario 
+                        success:function(usuario) {//guardar en locale storage id de usuario
                                                   localStorage.setItem("usuarioId",usuario.id);
-                                                  alert("El usuario se ha registrado correctamente en la app"); },
+                                                  app.idUsuario = usuario.id;
+                                                  
+                                                    app.mainView.loadPage('index.html');
+                                                    $$('div.views').removeClass('hidden-toolbar');
+                                                  
+                                                  },
                         error:function(usuario,error) { alert("Lo sentimos, hubo un problema con la red y no se pudo guardar tus datos. " + error); } 
                       }
                   );  
             }else{
                 localStorage.setItem("usuarioId",userId);
+                app.idUsuario = userId;
+                app.mainView.loadPage('index.html');
+                $$('div.views').removeClass('hidden-toolbar');                
             }
           },
           error: function(error) {
@@ -95,6 +126,12 @@ var parseWrapper = {
             alert("Error: " + error.code + " " + error.message);
           }
         });
+    },
+    
+    setReady: function() {
+        $( document ).trigger({
+                    type:"coreready"
+                  });
     }
 
 

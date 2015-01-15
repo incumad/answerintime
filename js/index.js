@@ -10,26 +10,20 @@ var app = {
     isDieMsgShow: false,
     daysOfLive: 2,
     // TODO estos campos se tienen que inicializar
-    idUsuario : 'Fg2krFv3sI', 
+    idUsuario : '', 
     channel : 'esp', 
-    idFB : '10152328083557543', 
-    nombreUsuario: 'Guillermo Sánchez Oliveros', // TODO se tiene que leer del movil       
+    idFB : '', 
+    nombreUsuario: '', // TODO se tiene que leer del movil
+    amigos: [],      
     //
     
     currentQuestion : '', // Pregunta activa actual
     
     initialize: function() {
-        // @TODO COMENTARLO DENTRO DE LA APLICACION MOVIL !!!!!
-        app.isAlreadySetup = 'yes';
-        
-        parseWrapper.initialize(app.isAlreadySetup);
         openFB.init({appId: '1515642338701364'});   
         
-        this.setupViews();        
         this.bindEvents();
         initRuleta();        
-        
-
     },
     
     
@@ -60,12 +54,18 @@ var app = {
         // asocio a la carga de la pagina inicial, el ver si tiene preguntas
         app.f7App.onPageInit('index-1', app.iniChecks);           
         
+        
+        this.isLogin();
+        app.mainView.loadPage('login.html');
+        
         // Vista inicial
+        /*
         if(!this.isLogin()){
             app.mainView.loadPage('login.html');
         }else{
             app.mainView.reloadPage('index.html');
         }
+        */
     },
             
     setTupClock: function(msToDye) {
@@ -83,22 +83,30 @@ var app = {
             
     // Bind Event Listeners
     bindEvents: function() {
+        // @TODO COMENTARLO DENTRO DE LA APLICACION MOVIL !!!!!
+        //app.isAlreadySetup = 'yes';        
         this.isAlreadySetup = localStorage.getItem("is_already_setup");
         
         document.addEventListener('deviceready', this.onDeviceReady, false);
         
-        $( document ).ready(this.onDeviceReady); 
+        //$( document ).ready(this.onDeviceReady); 
+        
+        $( document ).on( "coreready", function() {
+            app.setupViews();
+        });        
         
     },
             
     // deviceready Event Handler
     onDeviceReady: function() {
+        parseWrapper.initialize(app.isAlreadySetup);
+
         // Ya no debe hacer las operaciones de setup inicial
         if (this.isAlreadySetup !== 'yes') {
             this.isAlreadySetup = 'yes';
             localStorage.setItem("is_already_setup",'yes');
         }
-        
+
         //TEST:
         //app.devCloud({params:{'usuarioId':app.idUsuario}});
     },
@@ -118,6 +126,7 @@ var app = {
                         success: function(result) {
                             app.daysOfLive = result.daysOfLive;
                             $('.daysOfLive').html(app.daysOfLive);
+                            $('.nameOfLive').html(app.nombreUsuario);
                             app.setTupClock(result.msToDie);
                         }
                     });
@@ -128,12 +137,14 @@ var app = {
     
     isLogin : function(){
         var userId = localStorage.getItem('usuarioId');
-        //app.idUsuario = userId; descomentar cuando todo este ok;
         if (userId !== null){
+            app.idUsuario = userId;
+            app.idFB = localStorage.getItem("idFB");
+            app.nombreUsuario = localStorage.getItem("nombreUsuario");            
+            return true;
+        } else {
             return false;
         }
-        return false;
-
     },
 
     login : function(){
@@ -141,21 +152,36 @@ var app = {
                openFB.login(
                 function(response) {
                     if(response.status === 'connected') {
-                        alert('Facebook login succeeded, got access token: ' + response.authResponse.token);
-                        app.setinfoUser();
-                        app.mainView.loadPage('index.html');
+                        if (app.idUsuario == '') {
+                            app.setinfoUser();
+                        } else {
+                            // Guardamos los amigos
+                            app.setInfoFriends();
+                            app.mainView.loadPage('index.html');
                             $$('div.views').removeClass('hidden-toolbar');
+                        }
+                        
                     } else {
                         alert('Facebook login failed: ' + response.error);
                     }
-                }, {scope: 'email,read_stream,publish_stream,user_friends,read_friendlists'});
+                }, {scope: 'email,read_stream,publish_stream,user_friends'}); // he quitado este read_friendlists
 
     }, 
-         setinfoUser : function(){
+    
+    setinfoUser : function(){
       openFB.api({
                path: '/me',
                success: function(data) {
+                
+                var diasVidaIniciales = 5;
+                var msDiasVidaIniciales = parseInt(diasVidaIniciales * (24 * 60 * 60 * 1000));
+                var fecha = new Date();
+
+
+                fecha.setTime(fecha.getTime() + msDiasVidaIniciales);                   
+                   
                var dataUser = {first_name: data.first_name,
+                                finish_time: fecha,
                                 gender: data.gender,
                                 idFB: data.id,
                                 last_name : data.last_name,
@@ -165,26 +191,35 @@ var app = {
                                 email: data.email,
                                 hometown: data.hometown,
                                 birthday: data.birthday};
-                  parseWrapper.saveUsuario(dataUser);
+                    
+                parseWrapper.saveUsuario(dataUser);
+    
+                localStorage.setItem("idFB",data.id);
+                localStorage.setItem("nombreUsuario",data.first_name);
+                
+                app.idFB = data.id;
+                app.nombreUsuario = data.first_name;            
+            
+                
+                
+                // Guardamos los amigos
+                app.setInfoFriends();                
                  
                },
                error: function(error){alert(error.message);}
               });
-              
-             openFB.api({path: '/me/friends', 
-                   success: function(response) {
-                        var data = response.data
-                        alert(response.data.length);
-                       $.each( data, function( key, value ) {
-                            alert(JSON.stringify(value));
-                             return false;
-                       });
-                   }, 
-                   error: function(error) {alert(error.message);}
-                 });
-           
-
-
+    },
+    
+    setInfoFriends: function() {
+        openFB.api({path: '/me/friends', 
+              success: function(response) {
+                   var data = response.data
+                  $.each( data, function( key, value ) {
+                    app.amigos[key] = JSON.stringify(value);
+                  });
+              }, 
+              error: function(error) {alert(error.message);}
+            });
     },
             
     // Muestra una pregunta al usuario         
