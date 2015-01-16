@@ -9,6 +9,8 @@ var app = {
     f7App : '',
     isDieMsgShow: false,
     daysOfLive: 2,
+    dev: 0, // desarrollo
+    moderateTime: 0,
     // TODO estos campos se tienen que inicializar
     idUsuario : '', 
     channel : 'esp', 
@@ -25,6 +27,35 @@ var app = {
         this.bindEvents();
         initRuleta();        
     },
+            
+// Bind Event Listeners
+    bindEvents: function() {
+        $( document ).on( "coreready", function() {
+            app.setupViews();
+        });
+        
+        // @TODO COMENTARLO DENTRO DE LA APLICACION MOVIL !!!!!
+        //app.isAlreadySetup = 'yes';$( document ).ready(this.onDeviceReady);app.dev = 1;
+        
+        this.isAlreadySetup = localStorage.getItem("is_already_setup");
+        
+        document.addEventListener('deviceready', this.onDeviceReady, false);
+        
+    },
+            
+    // deviceready Event Handler
+    onDeviceReady: function() {
+        parseWrapper.initialize(app.isAlreadySetup);
+
+        // Ya no debe hacer las operaciones de setup inicial
+        if (this.isAlreadySetup !== 'yes') {
+            this.isAlreadySetup = 'yes';
+            localStorage.setItem("is_already_setup",'yes');
+        }
+
+        //TEST:
+        //app.devCloud({params:{'usuarioId':app.idUsuario}});
+    },            
     
     
     setupViews : function() {
@@ -38,21 +69,18 @@ var app = {
             dynamicNavbar: true
         });
         
-        /*
-        // Add views
-        app.f7App.addView('#view-2', {
-            // Because we use fixed-through navbar we can enable dynamic navbar
-            dynamicNavbar: true
-        });
-        app.f7App.addView('#view-3');
-        app.f7App.addView('#view-4');
-        */
         
         // Asocio acciones a los botones de las vistas
         $('#sm-question').click(app.submitNewQuestion);
         
+        $('#moderationlink').click(app.iniModeration);
+        
         // asocio a la carga de la pagina inicial, el ver si tiene preguntas
-        app.f7App.onPageInit('index-1', app.iniChecks);           
+        app.f7App.onPageInit('index-1', app.iniChecks);
+        
+        app.f7App.onPageInit('about', app.iniRankingChannel);
+        
+        app.f7App.onPageInit('services', app.iniRankingFriends);
         
         
         this.isLogin();
@@ -80,36 +108,6 @@ var app = {
         // en caso de que haya fallo al llamar al servidor
         localStorage.setItem("lastDateSalved",austDay.getTime());
     },            
-            
-    // Bind Event Listeners
-    bindEvents: function() {
-        // @TODO COMENTARLO DENTRO DE LA APLICACION MOVIL !!!!!
-        //app.isAlreadySetup = 'yes';        
-        this.isAlreadySetup = localStorage.getItem("is_already_setup");
-        
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-        
-        //$( document ).ready(this.onDeviceReady); 
-        
-        $( document ).on( "coreready", function() {
-            app.setupViews();
-        });        
-        
-    },
-            
-    // deviceready Event Handler
-    onDeviceReady: function() {
-        parseWrapper.initialize(app.isAlreadySetup);
-
-        // Ya no debe hacer las operaciones de setup inicial
-        if (this.isAlreadySetup !== 'yes') {
-            this.isAlreadySetup = 'yes';
-            localStorage.setItem("is_already_setup",'yes');
-        }
-
-        //TEST:
-        //app.devCloud({params:{'usuarioId':app.idUsuario}});
-    },
             
             
     iniChecks: function() {
@@ -148,6 +146,19 @@ var app = {
     },
 
     login : function(){
+                
+               // Desarrollo 
+               if (app.dev === 1) {
+                   
+                    app.idUsuario = 'LbguQ6YEK5';
+                    app.idFB = '10152763590018323';
+                    app.nombreUsuario = 'Javier';
+                    app.amigos = ['1532762753639693','10152328083557543'];    
+                   
+                   app.mainView.loadPage('index.html');
+                   return;
+               } 
+
                // Probando en web app.mainView.loadPage('index.html');return;
                openFB.login(
                 function(response) {
@@ -215,7 +226,7 @@ var app = {
               success: function(response) {
                    var data = response.data
                   $.each( data, function( key, value ) {
-                    app.amigos[key] = JSON.stringify(value);
+                    app.amigos[key] = value.id;
                   });
               }, 
               error: function(error) {alert(error.message);}
@@ -388,42 +399,134 @@ var app = {
         }
     },
     
+    iniRankingChannel: function(){
+        var oUsuarios = Parse.Object.extend("Usuario");
+        var usuarioQuery = new Parse.Query(oUsuarios);
+        usuarioQuery.descending("finish_time");
+        usuarioQuery.limit(100);
+        
+        usuarioQuery.find({
+                success: function(results) {
+                    app.drawRanking('rankglobal',results);
+                },
+                error: function() {
+                    alert('Error al traer los usuarios');
+                }
+          });
+    },
+            
+            
+    iniRankingFriends: function() {
+        var oUsuarios = Parse.Object.extend("Usuario");
+        var usuarioQuery = new Parse.Query(oUsuarios);
+        
+        usuarioQuery.containedIn("idFB",
+                  app.amigos);        
+        
+        usuarioQuery.descending("finish_time");
+        
+        usuarioQuery.find({
+                success: function(results) {
+                    app.drawRanking('rankfriends',results);
+                },
+                error: function() {
+                    alert('Error al traer los usuarios');
+                }
+          });
+    },
+            
+    drawRanking: function(idUl, results) {
+        for (var i = 0; i < results.length; ++i) {
+
+            var finishDate = results[i].get("finish_time");
+            var fechaFinal = new Date(finishDate);
+            var fechaServidor = new Date();
+            var msToDye = fechaFinal.getTime() - fechaServidor.getTime();
+
+            var diasToDie = Math.floor(msToDye / (1000 * 60 * 60 * 24));
+
+            var sLi = '<li class="item-content"><div class="item-media"><span class="badge">' + (i+1) + '</span></div><div class="item-inner"><div class="item-title">' + results[i].get("name") + '</div><div class="item-after">con ' + diasToDie + ' días por vivir</div></div></li>';
+            $('#' + idUl).append(sLi);
+        }
+    },
+            
+    iniModeration: function() {
+        if (app.moderateTime != 1) {
+            parseWrapper.getPreguntasModerar();
+            app.moderateTime = 1;
+        }
+    },
+            
+    modera: function(id,option) {
+        $('#bs-'+id).hide( "slow" );
+        
+        data = {'id':id,'option':option, 'userObjectId': app.idUsuario};
+        
+        //request = {'params':data};
+        //app.devCloud(request);
+        
+        Parse.Cloud.run('moderaProcess',data,{
+            success: function(result) {}
+        });
+        
+    },
     
     // aqui pruebo el codigo para el cloud        
-    devCloud: function(request, response) {
-
-            var query = new Parse.Query("Usuario");
-            query.equalTo("objectId", request.params.usuarioId);
-            query.first({
-            success: function(object) {
-                var finishDate = object.get("finish_time");
-                var bornDate = object.get("bornAt");
-                var fechaFinal = new Date(finishDate);
-                var fechaServidor = new Date();
-                var msToDye = fechaFinal.getTime() - fechaServidor.getTime();
-
-                if (!bornDate) {
-                    bornDate = object.createdAt;
-                }
-
-                var fechaNacimientoJuego = new Date(bornDate);
-
-                var t1 = fechaServidor.getTime();
-                var t2 = fechaNacimientoJuego.getTime();
-
-                var daysOflive = (t1 - t2) / (1000 * 60 * 60 * 24);
-
-                if (daysOflive < 2) {
-                    daysOflive = 2;
-                }
-
-                response.success({msToDie:msToDye,daysOfLive: Math.floor(daysOflive)});
-
-            },
-            error: function() {
-              response.error("finishDate failed");
+    devCloud: function(request, status) {
+        
+    var query = new Parse.Query("PreguntaNueva");
+    query.equalTo("objectId", request.params.id);
+    query.first({    
+        success: function(object) {
+            var votosContra = object.get("votosContra");
+            var votosFavor = object.get("votosFavor");
+            
+            if (request.params.option == 1) {
+                 object.set('votosFavor', votosFavor + 1);
+            } else {
+                 object.set('votosContra', votosContra + 1);
             }
-          });
+  
+            object.save(null, {
+                success: function(rs) {
+                    
+                    var query = new Parse.Query("Usuario");
+                    query.equalTo("objectId", request.params.userObjectId);
+
+                    query.first({    
+                            success: function(object) {
+                                var msPorModerar = 30 * 60 * 1000; // 30 minutos
+                                
+                                var finishDate = object.get("finish_time");
+                                var fechaFinal = new Date(finishDate);
+
+                                fechaFinal.setTime(fechaFinal.getTime() + msPorModerar);
+
+                                object.set('finish_time', fechaFinal);
+                                object.save(null, {
+                                    success: function(rs) {
+                                        //status.success("Pregunta moderada.");
+                                    },
+                                    error: function(error) {
+                                        status.error("Error salvando el tiempo por moderar: " + error.code + " " + error.message);
+                                    }
+                                });
+                            },
+                            error: function(error) {
+                                status.error("Error cogiendo el usuario para sumar tiempo: " + error.code + " " + error.message);
+                            }//error
+                        });
+                },
+                error: function(error) {
+                    status.error("Error moderando pregunta: " + error.code + " " + error.message);
+                }
+            });
+        },
+        error: function(error) {
+            status.error("Error cogiendo la pregunta para moderar: " + error.code + " " + error.message);
+        }//error
+    });        
+        
     }
     
 };

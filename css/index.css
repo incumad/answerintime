@@ -76,4 +76,7 @@ i.icon.icon-info {
     vertical-align: middle;
 }
 
+.item-content .item-inner .noheight {
+    height: 60px;
+}
 

@@ -107,19 +107,40 @@ catch (e) {
        
         
     },
+    
     getPreguntasModerar: function() {
-        var Preguntas = Parse.Object.extend("PreguntasN");
+        var Preguntas = Parse.Object.extend("PreguntaNueva");
         var query = new Parse.Query(Preguntas);
         var now = new Date();
-        query.lessThanOrEqualTo("moderaDesde", now);
+        
+        query.lessThanOrEqualTo("moderarDesde", now);
         query.greaterThanOrEqualTo("moderarHasta", now);
+        query.notEqualTo("indUso", '1');
+        
         query.find({
           success: function(results) {
-            alert("Successfully retrieved " + results.length + " scores.");
             // Do something with the returned Parse.Object values
             for (var i = 0; i < results.length; i++) {
-              var object = results[i];
-              alert(object.id);
+              var question = results[i];
+              
+                var templateM = $$('#moderate-question').html();
+                var compiledTemplate = Template7.compile(templateM);
+                
+
+                // Now we may render our compiled template by passing required context
+                var context = {
+                    texto: question.get('texto'),
+                    pregObjectId: question.id,
+                    creadorNombre:question.get('creadorNombre'),
+                    moderarDesde:question.get('moderarDesde').toLocaleString('es'),
+                    respuesta1: question.get('respuesta1'),
+                    respuesta2: question.get('respuesta2'),
+                    respuesta3: question.get('respuesta3'),
+                    respuesta4: question.get('respuesta4')
+                };
+                var html = compiledTemplate(context);
+                
+                $('#moderatelist').append(html);
             }
           },
           error: function(error) {
