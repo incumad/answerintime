@@ -64,7 +64,7 @@
                   <!--cargandolo en EN el body funciona-->
                 <div class="cd-life-aux"></div>
                 <div class="life-status">
-                    <h3><span class="nameOfLive">Hola</span> naciste hace <span class="daysOfLive">25</span> días, un gran bebe</h3>
+                    <h3><span class="nameOfLive">Hola</span> naciste hace <span class="daysOfLive">muy pocos</span> días</h3>
                     <img src="img/baby.png" />
                 </div>
               </div>
@@ -281,7 +281,7 @@
             </div>
             <div class="page-content">
                 <div class="content-block">
-                    <p>Te apetece poner en juego tu tiempo, puedes llegar a doblar las horas que apuestes o perderlo todo!!. La apuesta <strong>maxima son 24 horas</strong> y la <strong>mínima es 1 hora</strong>.</p>
+                    <p>Te apetece poner en juego tu tiempo, puedes llegar a doblar las horas que apuestes o perderlo todo!!. La apuesta <strong>maxima es un 10% de tu tiempo actual de vida, sin superar 24 horas</strong> y la <strong>mínima es 1 hora</strong>.</p>
                 </div>
                 <div class="list-block">
                     <ul>            
@@ -319,15 +319,15 @@
                 <span class="tabbar-label">Vida</span>
             </a>
             <a href="#view-2" class="tab-link">
-                <i class="icon tabbar-demo-icon-2"></i>
+                <i class="icon tabbar-demo-icon-3"></i>
                 <span class="tabbar-label">Preguntar</span>
             </a>
             <a id="moderationlink" href="#view-3" class="tab-link">
-                <i class="icon tabbar-demo-icon-3"></i>
+                <i class="icon tabbar-demo-icon-2"></i>
                 <span class="tabbar-label">Moderar</span>
             </a>
             <a href="#view-4" class="tab-link">
-                <i class="icon tabbar-demo-icon-4"></i>
+                <i class="icon tabbar-demo-icon-5"></i>
                 <span class="tabbar-label">Apostar</span>
             </a>            
         </div>
@@ -351,11 +351,12 @@
 <div class="page" data-page="question">
     <input type="hidden" id='pregObjectId' value='{{pregObjectId}}'>
     <input type="hidden" id='horas' value='{{horas}}'>
+    <input type="hidden" id='textoAcierto' value='{{textoAcierto}}'>
     <div class="content-block">
       <div class="logo">Cuestionados</div>
     </div>                
     <div class="store-data list-block">
-        <div class="content-block-title">{{texto}}</div>  
+        <div class="content-block-title wespace">{{texto}}</div>  
         <div class="list-block">
           <ul>
             <li>
@@ -363,7 +364,7 @@
                 <!-- Checked by default -->
                 <input type="radio" name="question-radio-{{pregObjectId}}" num="1" value="{{acierto1}}">
                 <div class="item-inner">
-                  <div class="item-title">{{respuesta1}}</div>
+                  <div class="item-title wespace">{{respuesta1}}</div>
                 </div>
               </label>
             </li>
@@ -372,7 +373,7 @@
                 <!-- Checked by default -->
                 <input type="radio" name="question-radio-{{pregObjectId}}" num="2" value="{{acierto2}}">
                 <div class="item-inner">
-                  <div class="item-title">{{respuesta2}}</div>
+                  <div class="item-title wespace">{{respuesta2}}</div>
                 </div>
               </label>
             </li>
@@ -381,7 +382,7 @@
                 <!-- Checked by default -->
                 <input type="radio" name="question-radio-{{pregObjectId}}" num="3" value="{{acierto3}}">
                 <div class="item-inner">
-                  <div class="item-title">{{respuesta3}}</div>
+                  <div class="item-title wespace">{{respuesta3}}</div>
                 </div>
               </label>
             </li>
@@ -390,14 +391,14 @@
                 <!-- Checked by default -->
                 <input type="radio" name="question-radio-{{pregObjectId}}" num="4" value="{{acierto4}}">
                 <div class="item-inner">
-                  <div class="item-title">{{respuesta4}}</div>
+                  <div class="item-title wespace">{{respuesta4}}</div>
                 </div>
               </label>
             </li>        
           </ul>
         </div> 
     </div>
-    <div class="cd-question-{{pregObjectId}}"></div>
+    <div class="cdquestion cd-question-{{pregObjectId}}"></div>
 </div>      
         </script>
         <script id="moderate-question" type="text/template7">

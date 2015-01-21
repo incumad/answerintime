@@ -140,14 +140,20 @@
                 currentSegment: '',
 
 		spin : function() {
+            
+                        var maxBet = Math.floor((app.msToDie / (1000 * 60 * 60 * 24)) * 0.1); // maximo un 10% de tu tiempo
+                        
+                        if (maxBet > 24) {
+                            maxBet = 24;
+                        }
 
 			// Start the wheel only if it's not already spinning
 			if (wheel.timerHandle == 0) {
                                 
                                 if ($$('#apuesta-horas').val() < 1) {
                                     $$('#apuesta-horas').val(1);
-                                } else if ($$('#apuesta-horas').val() > 24) {
-                                    $$('#apuesta-horas').val(24);
+                                } else if ($$('#apuesta-horas').val() > maxBet) {
+                                    $$('#apuesta-horas').val(maxBet);
                                 }
                             
                                 app.f7App.confirm('Vas a jugarte ' + $$('#apuesta-horas').val() + ' horas de tu tiempo', '¿Estas seguro?', function () {

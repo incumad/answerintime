@@ -80,3 +80,10 @@ i.icon.icon-info {
     height: 60px;
 }
 
+.cdquestion {
+    text-align: center;
+}
+
+.wespace, .store-data .wespace, .list-block .item-inner .wespace{
+    white-space: normal;
+}

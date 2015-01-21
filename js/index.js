@@ -11,6 +11,7 @@ var app = {
     daysOfLive: 2,
     dev: 0, // desarrollo
     moderateTime: 0,
+    msToDie: 0,            
     // TODO estos campos se tienen que inicializar
     idUsuario : '', 
     channel : 'esp', 
@@ -123,9 +124,17 @@ var app = {
                     Parse.Cloud.run('getInitSettings',{'usuarioId':app.idUsuario},{
                         success: function(result) {
                             app.daysOfLive = result.daysOfLive;
-                            $('.daysOfLive').html(app.daysOfLive);
+                            
+                            var msgDias = 'muy pocos';
+                            
+                            if (app.daysOfLive >= 2) {
+                                msgDias = app.daysOfLive;
+                            }
+                            
+                            $('.daysOfLive').html(msgDias);
                             $('.nameOfLive').html(app.nombreUsuario);
                             app.setTupClock(result.msToDie);
+                            app.msToDie = result.msToDie;
                         }
                     });
                 }
@@ -257,6 +266,24 @@ var app = {
                 respuesta3: question.get('respuesta3'),
                 respuesta4: question.get('respuesta4')
             };
+            
+            var textoAcierto = '';
+            
+            if (context.acierto1 == 1) {
+                textoAcierto = context.respuesta1;
+            }
+            if (context.acierto2 == 1) {
+                textoAcierto = context.respuesta2;
+            }
+            if (context.acierto3 == 1) {
+                textoAcierto = context.respuesta3;
+            }
+            if (context.acierto4 == 1) {
+                textoAcierto = context.respuesta4;
+            }
+            
+            context.textoAcierto = textoAcierto;
+            
             var html = compiledTemplate(context);
             
             app.currentQuestion = context;
@@ -294,9 +321,9 @@ var app = {
         var questionInput = "input[name$='question-radio-"+ app.currentQuestion.pregObjectId+"']:checked";
         
         if($$( questionInput ).length === 0) { // No contesto nada
-            msg = 'La proxima contesta mas rápido';
+            msg = 'La proxima contesta mas rápido. La respuesta correcta era ' + $('#textoAcierto').val();
         } else if ($$( questionInput ).val() === '0') { // Respuesta incorrecta
-            msg = 'Oooo... respuesta incorrecta, la proxima vez será';
+            msg = 'Oooo... respuesta incorrecta, la proxima vez será. La respuesta correcta era ' + $('#textoAcierto').val();
             numRespuesta = $$( questionInput ).attr('num');
         } else { // Respuesta correcta
             msg = 'Correcto!!! Si señor tu si que sabes!';
@@ -319,6 +346,18 @@ var app = {
     
     // Compruena que la pregunta es correcta y la envia
     submitNewQuestion: function() {
+      
+      var controlDay = '';
+      var today = new Date();
+      
+      controlDay = localStorage.getItem("control_send_question_day");  
+      
+      if (today.getDate() == controlDay) {
+          app.f7App.alert(msg,':( Sólo se puede enviar una pregunta al día');
+          return;
+      }
+      
+        
       // Compruebo que los campos estan rellenados correctamente
       var texto = $('#mk-question-texto').val();
       var respuesta1 = $('#mk-question-respuesta1').val();
@@ -326,7 +365,7 @@ var app = {
       var respuesta3 = $('#mk-question-respuesta3').val();
       var respuesta4 = $('#mk-question-respuesta4').val();
       var acierto = [0,0,0,0];
-      acierto[$("input[name$='mk-question-correcta']:checked").val()] = 1;
+      acierto[(parseInt($("input[name$='mk-question-correcta']:checked").val())-1)] = 1;
       var msg = '';
       
       if (texto.length < 5) {
@@ -367,6 +406,8 @@ var app = {
             Parse.Cloud.run('saveNewQuestion',dataQuestion,
                 {
                     success: function(result) {
+                        var sendDay = new Date();
+                        localStorage.setItem("control_send_question_day",sendDay.getDate());  
                         msg = 'Gracias por mandarnos tu pregunta, en cuanto sea moderada recibiras tu tiempo extra ;)';
                         app.f7App.alert(msg,':)');
                     },
@@ -462,13 +503,34 @@ var app = {
         
         data = {'id':id,'option':option, 'userObjectId': app.idUsuario};
         
-        //request = {'params':data};
-        //app.devCloud(request);
+        app.addControlModerateQuestions(id);
         
         Parse.Cloud.run('moderaProcess',data,{
             success: function(result) {}
         });
         
+    },
+    
+    addControlModerateQuestions: function(id) {
+        var aControl = JSON.parse(localStorage.getItem('aControlModerateQuestions'));
+        if (aControl == null) {
+            aControl = new Array();
+        }
+        aControl.push(id);
+        localStorage.setItem('aControlModerateQuestions',JSON.stringify(aControl));
+    },
+            
+    getControlModerateQuestions: function() {
+        var aControl = JSON.parse(localStorage.getItem('aControlModerateQuestions'));
+        if (aControl == null) {
+            aControl = new Array();
+        }
+        if (aControl.length > 50) {
+            aControl = new Array();
+            localStorage.setItem('aControlModerateQuestions',JSON.stringify(aControl));
+        }
+        
+        return aControl;
     },
     
     // aqui pruebo el codigo para el cloud        

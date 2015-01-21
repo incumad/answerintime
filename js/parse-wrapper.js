@@ -113,9 +113,12 @@ catch (e) {
         var query = new Parse.Query(Preguntas);
         var now = new Date();
         
+        var moderatedIds = app.getControlModerateQuestions();
+        
         query.lessThanOrEqualTo("moderarDesde", now);
         query.greaterThanOrEqualTo("moderarHasta", now);
         query.notEqualTo("indUso", '1');
+        query.notContainedIn("objectId",moderatedIds);
         
         query.find({
           success: function(results) {
