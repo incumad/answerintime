@@ -118,6 +118,10 @@ catch (e) {
         query.lessThanOrEqualTo("moderarDesde", now);
         query.greaterThanOrEqualTo("moderarHasta", now);
         query.notEqualTo("indUso", '1');
+        
+        query.lessThanOrEqualTo("votosFavor", 999);
+        query.lessThanOrEqualTo("votosContra", 999);
+        
         query.notContainedIn("objectId",moderatedIds);
         
         query.find({

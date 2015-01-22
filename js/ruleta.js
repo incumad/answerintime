@@ -141,10 +141,14 @@
 
 		spin : function() {
             
-                        var maxBet = Math.floor((app.msToDie / (1000 * 60 * 60 * 24)) * 0.1); // maximo un 10% de tu tiempo
+                        var maxBet = app.maxBet; 
                         
                         if (maxBet > 24) {
                             maxBet = 24;
+                        }
+                        
+                        if (maxBet < 1) {
+                            maxBet = 1;
                         }
 
 			// Start the wheel only if it's not already spinning
@@ -259,7 +263,7 @@
                                 if (hResultantes > 0) {
                                     var dataBet = {
                                         'userObjectId':app.idUsuario,
-                                        'horas': hResultantes // tengo que restar al usuario estas horas
+                                        'horas': hResultantes // tengo que sumar al usuario estas horas
                                     };
                                     Parse.Cloud.run('loadBet',dataBet,
                                         {
@@ -270,7 +274,7 @@
                                         }
                                     );  
                                 }
-                                
+                                app.getParams = 1;
                                 app.f7App.alert(sTextR, stitleR);
 			}
 

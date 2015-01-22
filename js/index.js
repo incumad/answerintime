@@ -11,7 +11,9 @@ var app = {
     daysOfLive: 2,
     dev: 0, // desarrollo
     moderateTime: 0,
-    msToDie: 0,            
+    msToDie: 0,
+    getParams: 0,
+    isAdmin: 0,
     // TODO estos campos se tienen que inicializar
     idUsuario : '', 
     channel : 'esp', 
@@ -36,11 +38,16 @@ var app = {
         });
         
         // @TODO COMENTARLO DENTRO DE LA APLICACION MOVIL !!!!!
-        //app.isAlreadySetup = 'yes';$( document ).ready(this.onDeviceReady);app.dev = 1;
+        //app.isAlreadySetup = 'yes';$( document ).ready(this.onDeviceReady);app.dev = 1;app.isAdmin = 1;
         
         this.isAlreadySetup = localStorage.getItem("is_already_setup");
         
         document.addEventListener('deviceready', this.onDeviceReady, false);
+        
+        document.addEventListener("resume", app.onResume, false);
+        
+        document.addEventListener("offline", app.onOffline, false);
+        
         
     },
             
@@ -56,8 +63,23 @@ var app = {
 
         //TEST:
         //app.devCloud({params:{'usuarioId':app.idUsuario}});
-    },            
+    },
     
+    // cuando se abre el movil        
+    onResume: function() {
+        app.iniChecks();
+    },
+    
+    onOffline: function() {
+        app.f7App.alert('No tienes conexión a internet la aplicación no funcionara correctamente');
+    },
+
+    controlIniChecks: function() {
+        if (app.getParams == 1) {
+            app.getParams = 0;
+            app.iniChecks();
+        }
+    },
     
     setupViews : function() {
         app.f7App = new Framework7();
@@ -75,6 +97,10 @@ var app = {
         $('#sm-question').click(app.submitNewQuestion);
         
         $('#moderationlink').click(app.iniModeration);
+        
+        $('#homeLink').click(app.controlIniChecks);
+        
+        
         
         // asocio a la carga de la pagina inicial, el ver si tiene preguntas
         app.f7App.onPageInit('index-1', app.iniChecks);
@@ -135,6 +161,10 @@ var app = {
                             $('.nameOfLive').html(app.nombreUsuario);
                             app.setTupClock(result.msToDie);
                             app.msToDie = result.msToDie;
+                            app.maxBet = Math.ceil((app.msToDie / (1000 * 60 * 60)) * 0.1); // maximo un 10% de tu tiempo
+                            $('.maxBet').html(app.maxBet);
+                            
+                            
                         }
                     });
                 }
@@ -147,7 +177,12 @@ var app = {
         if (userId !== null){
             app.idUsuario = userId;
             app.idFB = localStorage.getItem("idFB");
-            app.nombreUsuario = localStorage.getItem("nombreUsuario");            
+            app.nombreUsuario = localStorage.getItem("nombreUsuario");
+            
+            if ((app.idFB == '10152763590018323') || (app.idFB == '10152617649867543')) {
+                app.isAdmin = 1;
+            }
+            
             return true;
         } else {
             return false;
@@ -349,12 +384,17 @@ var app = {
       
       var controlDay = '';
       var today = new Date();
+      var votosFavor = 0;
       
-      controlDay = localStorage.getItem("control_send_question_day");  
       
-      if (today.getDate() == controlDay) {
-          app.f7App.alert(msg,':( Sólo se puede enviar una pregunta al día');
-          return;
+      if (app.isAdmin != 1) {
+        controlDay = localStorage.getItem("control_send_question_day");
+        if (today.getDate() == controlDay) {
+              app.f7App.alert(msg,':( Sólo se puede enviar una pregunta al día');
+              return;
+        }
+      } else {
+          votosFavor = 1000;
       }
       
         
@@ -400,15 +440,17 @@ var app = {
             'respuesta2' : respuesta2,
             'respuesta3' : respuesta3,
             'respuesta4' : respuesta4,
-            'texto' : texto
+            'texto' : texto,
+            'votosFavor': votosFavor
             };
         
             Parse.Cloud.run('saveNewQuestion',dataQuestion,
                 {
                     success: function(result) {
                         var sendDay = new Date();
-                        localStorage.setItem("control_send_question_day",sendDay.getDate());  
-                        msg = 'Gracias por mandarnos tu pregunta, en cuanto sea moderada recibiras tu tiempo extra ;)';
+                        localStorage.setItem("control_send_question_day",sendDay.getDate());
+                        app.getParams = 1;
+                        msg = 'Gracias por mandarnos tu pregunta, te has ganado un tu tiempo extra ;) muy valioso';
                         app.f7App.alert(msg,':)');
                     },
                     error: function(error) {
@@ -501,12 +543,22 @@ var app = {
     modera: function(id,option) {
         $('#bs-'+id).hide( "slow" );
         
+        if (app.isAdmin == 1) {
+            if (option == '1') {
+                option = '3';
+            } else {
+                option = '4';
+            }
+        }
+        
         data = {'id':id,'option':option, 'userObjectId': app.idUsuario};
+        
+        
         
         app.addControlModerateQuestions(id);
         
         Parse.Cloud.run('moderaProcess',data,{
-            success: function(result) {}
+            success: function(result) {app.getParams = 1;}
         });
         
     },
