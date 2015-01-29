@@ -87,3 +87,7 @@ i.icon.icon-info {
 .wespace, .store-data .wespace, .list-block .item-inner .wespace{
     white-space: normal;
 }
+
+.hidden {
+    display: none !important;
+}

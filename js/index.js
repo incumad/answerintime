@@ -40,7 +40,7 @@ var app = {
         // @TODO COMENTARLO DENTRO DE LA APLICACION MOVIL !!!!!
         //app.isAlreadySetup = 'yes';$( document ).ready(this.onDeviceReady);app.dev = 1;app.isAdmin = 1;
         
-        this.isAlreadySetup = localStorage.getItem("is_already_setup");
+        app.isAlreadySetup = localStorage.getItem("is_already_setup");
         
         document.addEventListener('deviceready', this.onDeviceReady, false);
         
@@ -56,8 +56,8 @@ var app = {
         parseWrapper.initialize(app.isAlreadySetup);
 
         // Ya no debe hacer las operaciones de setup inicial
-        if (this.isAlreadySetup !== 'yes') {
-            this.isAlreadySetup = 'yes';
+        if (app.isAlreadySetup !== 'yes') {
+            app.isAlreadySetup = 'yes';
             localStorage.setItem("is_already_setup",'yes');
         }
 
@@ -111,6 +111,9 @@ var app = {
         
         
         this.isLogin();
+        
+        $$('.toolbar').addClass('hidden');
+        
         app.mainView.loadPage('login.html');
         
         // Vista inicial
@@ -190,7 +193,7 @@ var app = {
     },
 
     login : function(){
-                
+               $$('.toolbar').removeClass('hidden'); 
                // Desarrollo 
                if (app.dev === 1) {
                    
@@ -356,12 +359,12 @@ var app = {
         var questionInput = "input[name$='question-radio-"+ app.currentQuestion.pregObjectId+"']:checked";
         
         if($$( questionInput ).length === 0) { // No contesto nada
-            msg = 'La proxima contesta mas rápido. La respuesta correcta era ' + $('#textoAcierto').val();
+            msg = 'La próxima contesta mas rápido. La respuesta correcta era ' + $('#textoAcierto').val();
         } else if ($$( questionInput ).val() === '0') { // Respuesta incorrecta
-            msg = 'Oooo... respuesta incorrecta, la proxima vez será. La respuesta correcta era ' + $('#textoAcierto').val();
+            msg = 'Oooo... respuesta incorrecta, la próxima vez será. La respuesta correcta era ' + $('#textoAcierto-'+ app.currentQuestion.pregObjectId).val();
             numRespuesta = $$( questionInput ).attr('num');
         } else { // Respuesta correcta
-            msg = 'Correcto!!! Si señor tu si que sabes!';
+            msg = 'Correcto!!! Si señor tú sí que sabes!';
             sTitle = ':)';
             acierto = 1;
             numRespuesta = $$( questionInput ).attr('num');
@@ -470,11 +473,11 @@ var app = {
             Parse.Cloud.run('dieProcess',{'userObjectId':app.idUsuario},
                     {
                         success: function(result) {
-                            msg = 'Oooo se acabo tu tiempo, es una pena pero vas a perder todos tus logros en cuestionados, aunque sabemos que quieres seguir jugando así que no te preocupes puedes volver a NACER :)';
+                            msg = 'Oooo se acabo tu tiempo, es una pena pero vas a perder todos tus logros en Cuestionados, aunque sabemos que quieres seguir jugando así que no te preocupes puedes volver a NACER :)';
                             app.f7App.alert(msg,':(', function(){app.mainView.reloadPage('index.html');});
                         },
                         error: function(error) {
-                            msg = 'Oooo se acabo tu tiempo, es una pena pero vas a perder todos tus logros en cuestionados, aunque sabemos que quieres seguir jugando así que no te preocupes puedes volver a NACER :)';
+                            msg = 'Oooo se acabo tu tiempo, es una pena pero vas a perder todos tus logros en Cuestionados, aunque sabemos que quieres seguir jugando así que no te preocupes puedes volver a NACER :)';
                             app.f7App.alert(msg,':(');
                         }
                     }

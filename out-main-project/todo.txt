@@ -49,3 +49,23 @@ Ir a la siguente configuracion en la app de facebook
 https://www.facebook.com/connect/login_success.html
 
 guardar cambios si no se añade esto en la app de facebook no funcionara con phonegap
+
+------------ SUBIDA EN ANDROID -----------
+
+cordova build --release android
+
+keytool -genkey -v -keystore my-release-key.keystore -alias cuestionados -keyalg RSA -keysize 2048 -validity 10000
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore my-release-key.keystore /incumad/cuestionados/platforms/android/ant-build/Cuestionados-release-unsigned.apk cuestionados
+
+
+zipalign -v 4 /incumad/cuestionados/platforms/android/ant-build/Cuestionados-release-unsigned.apk Cuestionados.apk
+
+
+- Con esto se crea el hash de FB
+
+keytool -exportcert -alias my-release-key.keystore -keystore my-release-key.keystore | openssl sha1 -binary | openssl base64
+
+-
+
+cuestionados2015
