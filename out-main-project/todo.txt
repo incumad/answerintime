@@ -14,6 +14,7 @@ cordova platform add android
 cordova plugin add https://github.com/benjie/phonegap-parse-plugin
 cordova plugin add org.apache.cordova.inappbrowser
 cordova plugin add org.apache.cordova.network-information
+cordova plugin add org.apache.cordova.device
 
 
 

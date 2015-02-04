@@ -19,7 +19,7 @@ var app = {
     channel : 'esp', 
     idFB : '', 
     nombreUsuario: '', // TODO se tiene que leer del movil
-    amigos: [],      
+    amigos: [],
     //
     
     currentQuestion : '', // Pregunta activa actual
@@ -53,6 +53,7 @@ var app = {
             
     // deviceready Event Handler
     onDeviceReady: function() {
+        
         parseWrapper.initialize(app.isAlreadySetup);
 
         // Ya no debe hacer las operaciones de setup inicial
@@ -167,7 +168,8 @@ var app = {
                             app.maxBet = Math.ceil((app.msToDie / (1000 * 60 * 60)) * 0.1); // maximo un 10% de tu tiempo
                             $('.maxBet').html(app.maxBet);
                             
-                            
+                            // Vemos si le decimos que opine en market
+                            app.getControlSuggestReview();                            
                         }
                     });
                 }
@@ -193,6 +195,7 @@ var app = {
     },
 
     login : function(){
+               app.addControlSuggestReview();
                $$('.toolbar').removeClass('hidden'); 
                // Desarrollo 
                if (app.dev === 1) {
@@ -248,7 +251,8 @@ var app = {
                                 locale: data.locale,
                                 email: data.email,
                                 hometown: data.hometown,
-                                birthday: data.birthday};
+                                birthday: data.birthday,
+                                SO: device.platform};
                     
                 parseWrapper.saveUsuario(dataUser);
     
@@ -587,6 +591,57 @@ var app = {
         
         return aControl;
     },
+            
+    addControlSuggestReview: function() {
+        var dateControl = new Date();
+        var aControl = JSON.parse(localStorage.getItem('aControlSuggestReview'));
+        if (aControl == null) {
+            aControl = new Array();
+        }
+        var control = localStorage.getItem('flagControlSuggestReview');  
+        if (control != 'stop') {
+            aControl.push(dateControl);
+            localStorage.setItem('aControlSuggestReview',JSON.stringify(aControl));
+        }
+    },
+            
+    getControlSuggestReview: function() {
+        var aControl = JSON.parse(localStorage.getItem('aControlSuggestReview'));
+        if (aControl == null) {
+            aControl = new Array();
+        }
+        if (aControl.length > 3) {
+            aControl = new Array();
+            localStorage.setItem('aControlSuggestReview',JSON.stringify(aControl));
+            var msg = '¿Te está gustando Cuestionados?, escribe una opinión sobre el juego y gana 48 horas de vida extra';
+            
+            app.f7App.confirm(msg, ':)', 
+                  function () {
+                    var dataBet = {
+                        'userObjectId':app.idUsuario,
+                        'horas': 48
+                    };
+                    Parse.Cloud.run('loadBet',dataBet,
+                        {
+                            error: function(error) {
+                                msg = 'Hubo un error tecnico al regalarte los 2 días';
+                                app.f7App.alert(msg,':(');
+                            }
+                        }
+                    );                      
+                    localStorage.setItem('flagControlSuggestReview','stop');
+                    if (device.platform == 'Android') {
+                        window.open('https://play.google.com/store/apps/details?id=net.cuestionados.app', '_system', 'location=no');
+                    } else {
+                        window.open('http://www.apple.com/itunes/', '_system', 'location=no');
+                    }
+                  }
+                );
+        }
+        
+        return aControl;
+    },            
+            
     
     // aqui pruebo el codigo para el cloud        
     devCloud: function(request, status) {
