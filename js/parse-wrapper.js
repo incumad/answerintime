@@ -23,12 +23,10 @@ try {
 
         // Inicializamos Parse Plugin para not Push
         parsePlugin.initialize(parseWrapper.PARSEAPPID, parseWrapper.PARSECLIENTKEY, function() {
-            
-            parseWrapper.setReady();
-            
             parsePlugin.getInstallationId(function(id) {
                 // TODO Coger el canal (esp) del idioma del movil
                 parsePlugin.subscribe(app.channel, function() {
+                    parseWrapper.setReady();// una vez subcritos, continuamos
                     // OK subscripcion
                 }, function(e) {
                     //ERROR subscripcion
@@ -84,9 +82,14 @@ catch (e) {
                       { 
                         success:function(usuario) {//guardar en locale storage id de usuario
                                                   localStorage.setItem("usuarioId",usuario.id);
-                                                  app.idUsuario = usuario.id;
+                                                  localStorage.setItem("isInvitado",0);
                                                   
-                                                    app.mainView.loadPage('index.html');
+                                                  app.isInvitado = 0;
+                                                  app.idUsuario = usuario.id;
+
+                                                  
+                                                    //app.mainView.loadPage('index.html');
+                                                    parseWrapper.setReadyUser();
                                                     $$('div.views').removeClass('hidden-toolbar');
                                                   
                                                   },
@@ -95,8 +98,14 @@ catch (e) {
                   );  
             }else{
                 localStorage.setItem("usuarioId",userId);
+                localStorage.setItem("isInvitado",0);
+
+                app.isInvitado = 0;                
+                
+                
                 app.idUsuario = userId;
-                app.mainView.loadPage('index.html');
+                //app.mainView.loadPage('index.html');
+                parseWrapper.setReadyUser();
                 $$('div.views').removeClass('hidden-toolbar');                
             }
           },
@@ -159,6 +168,12 @@ catch (e) {
     setReady: function() {
         $( document ).trigger({
                     type:"coreready"
+                  });
+    },
+    
+    setReadyUser: function() {
+        $( document ).trigger({
+                    type:"userready"
                   });
     }
 

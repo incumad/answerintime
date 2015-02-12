@@ -91,3 +91,8 @@ i.icon.icon-info {
 .hidden {
     display: none !important;
 }
+
+.invitadomsg {
+    margin: 10px 10px;
+    text-align: center;
+}
