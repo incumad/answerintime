@@ -39,7 +39,7 @@ var app = {
         });
         
         // @TODO COMENTARLO DENTRO DE LA APLICACION MOVIL !!!!!
-        // app.isAlreadySetup = 'yes';$( document ).ready(this.onDeviceReady);app.dev = 1;app.isAdmin = 1;
+        //app.isAlreadySetup = 'yes';$( document ).ready(this.onDeviceReady);app.dev = 1;app.isAdmin = 1;
         
         document.addEventListener('deviceready', this.onDeviceReady, false);
         
