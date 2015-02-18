@@ -47,6 +47,23 @@ span.navbar-logo {
     margin:auto;
     padding: 10px;   
 }
+
+.msgstatus {
+    width: 90%;
+    text-align: center;
+    margin:auto;
+    padding: 10px;
+    font-size: 20px;
+}
+
+.msgins {
+    width: 90%;
+    text-align: center;
+    margin:auto;
+    padding: 10px;
+    font-size: 20px;
+}
+
 .life-status img{
     background-color: #f7f7f8;
     border: 1px solid #d7d7d8;
@@ -96,3 +113,8 @@ i.icon.icon-info {
     margin: 10px 10px;
     text-align: center;
 }
+
+.rankinvitado{
+    text-align: center;
+}
+

@@ -15,14 +15,14 @@ var app = {
     getParams: 0,
     isInvitado : 0,
     isAdmin: 0,
-    // TODO estos campos se tienen que inicializar
+    //
     idUsuario : '', 
-    channel : 'esp', 
+    channel : 'esp',
+    //channel : 'test', // @@@@@@@@@@@@@@@@@@@ TODO quitar
     idFB : '', 
-    nombreUsuario: '', // TODO se tiene que leer del movil
+    nombreUsuario: '',
     amigos: [],
     //
-    
     currentQuestion : '', // Pregunta activa actual
     
     initialize: function() {
@@ -115,7 +115,7 @@ var app = {
         
         app.f7App.onPageInit('services', app.iniRankingFriends);
         
-        
+
         if(app.isLogin()) {
             app.addControlSuggestReview();
             app.mainView.reloadPage('index.html');
@@ -193,6 +193,17 @@ var app = {
     
     isLogin : function(){
         var userId = localStorage.getItem('usuarioId');
+        
+        if (app.dev === 1) {
+            app.idUsuario = 'LbguQ6YEK5';
+            app.idFB = '10152763590018323';
+            app.nombreUsuario = 'Javier';
+            app.amigos = ['1532762753639693','10152328083557543'];
+            app.isInvitado = 'yes';
+            return true;
+        }        
+        
+        
         if (userId !== null){
             app.idUsuario = userId;
             app.idFB = localStorage.getItem("idFB");
@@ -210,20 +221,7 @@ var app = {
 
     login : function(){
                app.addControlSuggestReview();
-               $$('.toolbar').removeClass('hidden'); 
-               // Desarrollo 
-               if (app.dev === 1) {
-                   
-                    app.idUsuario = 'LbguQ6YEK5';
-                    app.idFB = '10152763590018323';
-                    app.nombreUsuario = 'Javier';
-                    app.amigos = ['1532762753639693','10152328083557543'];    
-                   
-
-                   app.mainView.loadPage('index.html');
-                   return;
-               } 
-
+               
                // Probando en web app.mainView.loadPage('index.html');return;
                openFB.login(
                 function(response) {
@@ -233,8 +231,6 @@ var app = {
                         } else {
                             // Guardamos los amigos
                             app.setInfoFriends();
-                            $$('div.views').removeClass('hidden-toolbar');
-
                             app.mainView.loadPage('index.html');
                         }
                     } else {
@@ -271,7 +267,6 @@ var app = {
                     
                 if (app.isInvitado === 'yes') {
                     dataUser.id = app.idUsuario;
-                    dataUser.userObjectId = app.idUsuario;
                     dataUser.invitado = 0;
                 }   
                     
@@ -540,6 +535,8 @@ var app = {
         var oUsuarios = Parse.Object.extend("Usuario");
         var usuarioQuery = new Parse.Query(oUsuarios);
         usuarioQuery.descending("finish_time");
+        usuarioQuery.greaterThan("idFB",'');                  
+        
         usuarioQuery.limit(100);
         
         usuarioQuery.find({
@@ -557,19 +554,25 @@ var app = {
         var oUsuarios = Parse.Object.extend("Usuario");
         var usuarioQuery = new Parse.Query(oUsuarios);
         
-        usuarioQuery.containedIn("idFB",
-                  app.amigos);        
+        if (app.isInvitado === 'yes') {
+            var sLiNf = '<li class="rankinvitado">Para poder ver a tus amigos conectate a traves de Facebook<div class="content-block login-btn-content"><a href="#" class="button button-big login-submit button-fill color-orange" onclick="app.login();">Conectar <img class="fblog" src="img/FB-f-Logo__white_29.png"/></a></div></li>';
+            $('#rankfriends').append(sLiNf);
+        } else {
         
-        usuarioQuery.descending("finish_time");
-        
-        usuarioQuery.find({
-                success: function(results) {
-                    app.drawRanking('rankfriends',results);
-                },
-                error: function() {
-                    alert('Error al traer los usuarios');
-                }
-          });
+            usuarioQuery.containedIn("idFB",
+                      app.amigos);
+
+            usuarioQuery.descending("finish_time");
+
+            usuarioQuery.find({
+                    success: function(results) {
+                        app.drawRanking('rankfriends',results);
+                    },
+                    error: function() {
+                        alert('Error al traer los usuarios');
+                    }
+              });
+        }
     },
             
     drawRanking: function(idUl, results) {
